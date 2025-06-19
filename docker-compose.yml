@@ -32,11 +32,6 @@ services:
     build: 
       context: ./db
       dockerfile: Dockerfile
-    environment:
-      LANG: C.UTF-8
-      TZ: Asia/Tokyo
-      MYSQL_ROOT_PASSWORD: pass
-      MYSQL_DATABASE: db
     volumes:
     - db_data:/var/lib/mysql
     ports:
