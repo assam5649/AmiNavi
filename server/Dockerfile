@@ -1,3 +1,13 @@
-FROM golang
+FROM golang:1.21
 
-RUN apt-get update
+WORKDIR /app
+
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
+
+COPY . .
+
+RUN go build -o app ./cmd
+
+CMD ["./app"]

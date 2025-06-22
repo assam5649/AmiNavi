@@ -6,12 +6,19 @@ services:
       dockerfile: Dockerfile
     tty: true
     stdin_open: true
-    volumes:
-    - ./server:/app
     ports:
     - "8080:8080"
     networks:
     - app_network
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+    depends_on:
+      db:
+        condition: service_healthy
   
   ml-service:
     container_name: python-ml
@@ -38,6 +45,14 @@ services:
     - "3306:3306"
     networks:
     - app_network
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "db"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
   
 networks:
     app_network:
