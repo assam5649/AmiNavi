@@ -52,11 +52,6 @@ jobs:
             sleep 2
           done
 
-      - name: Run migrations
-        run: |
-          cd ./server
-          go run ./cmd/main.go
-
       - name: Run tests
         run: |
           cd ./server
