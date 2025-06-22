@@ -4,13 +4,16 @@ on:
   issues:
     types: [assigned]
 
+permissions:
+  contents: write
+  issues: write
+
 jobs:
   create_issue_branch_job:
     name: Creating Branch 🪴
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
       - name: Create Issue Branch
         uses: robvanderleek/create-issue-branch@main
-        with:
-          branchName: "${{ github.event.issue.number }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
