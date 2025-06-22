@@ -1,4 +1,5 @@
 name: Create Issue Branch 🌱
+
 on:
   issues:
     types: [assigned]
@@ -9,9 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      # Create Issue Branch
       - name: Create Issue Branch
         uses: robvanderleek/create-issue-branch@main
-        env:
-        env:
-          BRANCH_NAME_TEMPLATE: issue-${{ github.event.issue.number }}
+        with:
+          branchName: "${{ github.event.issue.number }}"
