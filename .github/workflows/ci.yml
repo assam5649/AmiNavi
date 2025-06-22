@@ -57,4 +57,4 @@ jobs:
 
       - name: Run tests
         run: |
-          go test ./test/... -v
+          go test ./server/test/... -v
