@@ -55,7 +55,7 @@ jobs:
       - name: Run migrations
         run: |
           cd ./server
-          go run ./internal/db/migrate.go
+          go run ./cmd/main.go
 
       - name: Run tests
         run: |
