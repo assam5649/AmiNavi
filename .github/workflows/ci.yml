@@ -53,7 +53,9 @@ jobs:
           done
 
       - name: Run migrations
-        run: go run ./server/internal/db/migrate.go
+        run: 
+          cd ./server
+          go run ./server/internal/db/migrate.go
 
       - name: Run tests
         run: |
