@@ -33,7 +33,7 @@ jobs:
       DB_PASS: testpass
       DB_HOST: db
       DB_PORT: 3306
-      DB_NAME: testdb
+      DB_NAME: db
 
     steps:
       - name: Checkout repository
