@@ -10,10 +10,16 @@ permissions:
 
 jobs:
   create_issue_branch_job:
-    name: Creating Branch 🪴
     runs-on: ubuntu-latest
     steps:
-      - name: Create Issue Branch
-        uses: robvanderleek/create-issue-branch@main
+      - uses: actions/checkout@v3
+
+      - name: Create branch named by issue number only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin
+          git checkout -b "${{ github.event.issue.number }}"
+          git push origin "${{ github.event.issue.number }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
