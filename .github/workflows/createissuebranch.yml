@@ -1,5 +1,24 @@
+# ================================================
+# Create Issue Branch 🌱
+#
+# トリガー:
+#   - Issueが「assigned」されたとき
+#
+# 処理内容:
+#   1. Issueの情報を取得
+#   2. Issue番号をブランチ名として新しいブランチを作成（例: issue-42）
+#   3. 作成したブランチをリモートリポジトリにプッシュ
+#
+# 目的:
+#   - 各Issueに対応する作業ブランチを自動で生成し、手動でのブランチ作成を省略
+#
+# 注意点:
+# - GitHubの `GITHUB_TOKEN` を使ってブッシュするため、リポジトリの書き込み権限設定が必要です。
+# ================================================
+
 name: Create Issue Branch 🌱
 
+# Issueがアサインされたときにワークフローをトリガー
 on:
   issues:
     types: [assigned]
@@ -14,12 +33,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Create branch named by issue number only
+      # Issue番号による"issue-<issue番号>"ブランチを作成
+      - name: Create branch named by issue number
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git fetch origin
-          git checkout -b "${{ github.event.issue.number }}"
-          git push origin "${{ github.event.issue.number }}"
+          git checkout -b "issue-${{ github.event.issue.number }}"
+          git push origin "issue-${{ github.event.issue.number }}"
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
