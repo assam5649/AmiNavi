@@ -12,7 +12,7 @@ func TestConnect(t *testing.T) {
 	os.Setenv("DB_PORT", "3306")
 	os.Setenv("DB_NAME", "testdb")
 
-	err := db.Connect()
+	err := Connect()
 	if err != nil {
 		t.Fatalf("failed to connect to DB: %v", err)
 	}
