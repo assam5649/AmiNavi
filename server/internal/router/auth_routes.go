@@ -17,7 +17,7 @@ func NewRouter(db *gorm.DB, firebaseAuthClient *firebaseAuth.Client) *gin.Engine
 
 	r.POST("/register", authHandler.Register)
 
-	api := r.Group("/api/v1")
+	api := r.Group("/v1")
 	api.Use(auth.AuthMiddleware(firebaseAuthClient))
 	{
 		// 認証済みアクセス確認用テストエンドポイント
