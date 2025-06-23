@@ -1,7 +1,7 @@
 package db
 
 import (
-	"server/models"
+	"server/internal/models"
 )
 
 // Migrate はデータベースのスキーマを最新の状態に自動移行します。
