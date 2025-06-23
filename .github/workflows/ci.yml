@@ -1,7 +1,22 @@
-# .github/workflows/ci.yml
+# ============================================
+# CI Workflow for Go Project with MySQL
+# 
+# トリガー:
+#   - mainブランチへの push
+#   - mainブランチへの pull request
+#
+# 処理内容:
+#   1. Go 1.21 環境をセットアップ
+#   2. MySQL 8.0 コンテナ起動とユーザー作成
+#   3. server ディレクトリ配下のテストを実行
+#
+# 目的:
+#   - プッシュ・PR時にユニットテストを自動実行し、品質を保つ
+# ============================================
 
-name: CI Workflow
+name: ci workflow
 
+# mainブランチにpush, pull requestされたときにworkflowをトリガー
 on:
   push:
     branches: [main]
@@ -12,6 +27,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    # データベースが必要なテストコードのためサービスコンテナとしてMySQLを起動
+    # Goテストからアクセスできるようにポート公開が必用
     services:
       db:
         image: mysql:8.0
@@ -20,7 +37,7 @@ jobs:
           MYSQL_DATABASE: testdb
         ports:
           - 3306:3306
-        options: >-
+        options: >- # MySQLの起動完了を待つ
           --health-cmd="mysql -h 127.0.0.1 -P 3306 -u root -ppassword -e 'SELECT 1'"
           --health-interval=10s
           --health-timeout=5s
@@ -38,6 +55,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y mysql-client
 
+      # Goテスト用のDBユーザーを作成し権限を付与
       - name: Set up MySQL User
         run: |
           mysql -h 127.0.0.1 -P 3306 -u root -ppassword -e "CREATE USER 'testuser'@'%' IDENTIFIED BY 'testpass';"
