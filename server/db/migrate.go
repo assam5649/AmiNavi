@@ -8,7 +8,7 @@ import (
 // ここでは、定義されたモデルに基づいてテーブルを作成または更新します。
 func Migrate() {
 	DB.AutoMigrate(
-		&models.Users{},
-		&models.Works{},
+		&models.User{},
+		&models.Work{},
 	)
 }
