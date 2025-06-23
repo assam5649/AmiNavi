@@ -1,7 +1,7 @@
 package db
 
 import (
-	"server/internal/models"
+	"server/models"
 )
 
 func Migrate() {

@@ -1,10 +1,8 @@
-package db_test
+package db
 
 import (
 	"os"
 	"testing"
-
-	"server/internal/db"
 )
 
 func TestConnect(t *testing.T) {

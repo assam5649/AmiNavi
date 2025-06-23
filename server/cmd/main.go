@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"server/internal/db"
+	"server/db"
 )
 
 func main() {

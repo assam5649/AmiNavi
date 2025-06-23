@@ -51,7 +51,7 @@ jobs:
       - name: Run tests
         run: |
           cd server
-          go test ./test/...
+          go test ./...
         env:
           DB_USER: testuser
           DB_PASS: testpass
