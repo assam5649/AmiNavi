@@ -2,7 +2,7 @@
 # 依存関係のダウンロードを行い、'app'という名前の実行可能ファイルを生成
 # './cmd'はアプリケーションのエントリポイントがあるディレクトリを指します。
 
-FROM golang:1.21
+FROM golang:1.23
 
 WORKDIR /app
 
@@ -12,6 +12,6 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o app ./cmd
+RUN go build -o app ./cmd/api
 
 CMD ["./app"]
