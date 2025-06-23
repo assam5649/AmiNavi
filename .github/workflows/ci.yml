@@ -1,21 +1,19 @@
-name: Go Test CI
+# .github/workflows/ci.yml
+
+name: CI Workflow
 
 on:
   push:
-    branches:
-      - main
-      - develop
+    branches: [main]
   pull_request:
-    branches:
-      - main
-      - develop
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     services:
-      mysql:
+      db:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: password
@@ -23,38 +21,40 @@ jobs:
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping --silent"
+          --health-cmd="mysql -h 127.0.0.1 -P 3306 -u root -ppassword -e 'SELECT 1'"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=3
-
-    env:
-      DB_USER: testuser
-      DB_PASS: testpass
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_NAME: testdb
-
+          --health-retries=12
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
           go-version: '1.21'
 
-      - name: Wait for MySQL to be ready
+      - name: Install MySQL Client
         run: |
-          for i in {1..30}; do
-            mysqladmin ping -h $DB_HOST -P $DB_PORT --silent && break
-            echo "Waiting for MySQL..."
-            sleep 2
-          done
+          sudo apt-get update
+          sudo apt-get install -y mysql-client
 
-      - name: Run migrations
-        run: go run ./server/internal/db/migrate.go
+      - name: Set up MySQL User
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -u root -ppassword -e "CREATE USER 'testuser'@'%' IDENTIFIED BY 'testpass';"
+          mysql -h 127.0.0.1 -P 3306 -u root -ppassword -e "GRANT ALL PRIVILEGES ON testdb.* TO 'testuser'@'%';"
+          mysql -h 127.0.0.1 -P 3306 -u root -ppassword -e "FLUSH PRIVILEGES;"
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
 
       - name: Run tests
         run: |
-          go test ./server/test/... -v
+          cd server
+          go test ./test/...
+        env:
+          DB_USER: testuser
+          DB_PASS: testpass
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_NAME: testdb
