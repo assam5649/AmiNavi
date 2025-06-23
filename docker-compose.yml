@@ -10,7 +10,7 @@ services:
     - "8080:8080"
     networks:
     - app_network
-    environment:
+    environment: # DB接続情報などの環境変数を設定(.envファイルからロードされる)
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - DB_HOST=${DB_HOST}
@@ -48,15 +48,17 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
-    healthcheck:
+    healthcheck: # 起動を待つためのヘルスチェック
       test: ["CMD", "mysqladmin", "ping", "-h", "db"]
       interval: 5s
       timeout: 3s
       retries: 5
-  
+
+# サービス間で通信するためのカスタムネットワークを定義
 networks:
     app_network:
       driver: bridge
 
+# Dockerボリュームを定義し、データベースのデータを永続化
 volumes:
   db_data:
