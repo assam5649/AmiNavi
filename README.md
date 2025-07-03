@@ -10,13 +10,31 @@
 
 ## API
 
-### 認証
+すべての通信においてFirebase UIDをヘッダに付加する
+
+### ユーザー管理
 Firebase Authentication による認証を用い、ユーザーの識別を行う。<br>
-ユーザー名やアイコンなどのアプリケーション固有のプロフィール情報は、 Firebase UIDとサーバー側のDBを紐付ける
+ユーザー名やアイコンなどのアプリケーション固有のプロフィール情報は、 Firebase UIDとサーバー側のDBを紐付ける。 <br>
+必要な情報はFirebaseが用意するAPIを用いて取得するため、jsonボディは受け取らない。
+
  - **POST /v1/register** - 新しいユーザーを登録します
 
 ### 編み図管理
  - **GET /v1/works** - すべての作品を一覧を返します(ユーザー別にフィルタリングします)
- - **POST /v1/works** - 新しい作品を登録します
- - **PUT /v1/works/{id}** - 特定の作品のメタデータを更新します
+ - **POST /v1/works** - 新しい作品を登録します<br>
+```
+{
+    "title" : "string",
+    "work_url" : "string"
+}
+```
+ - **PUT /v1/works/{id}** - 特定の作品のメタデータを更新します<br>
+```
+{
+   "title" : "string",
+   "work_url" : "string",
+   "count" : "int",
+   "bookmark" : "bool"
+}
+```
  - **DELETE /v1/works/{id}** - 作品を削除します
