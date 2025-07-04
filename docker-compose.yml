@@ -10,17 +10,20 @@ services:
     - "8080:8080"
     networks:
     - app_network
-    environment: # DB接続情報などの環境変数を設定(.envファイルからロードされる)
+    environment:
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_NAME=${DB_NAME}
+      - MYSQL_URL=${MYSQL_URL}
       - FIREBASE_SERVICE_ACCOUNT_KEY_PATH=${FIREBASE_SERVICE_ACCOUNT_KEY_PATH}
+    volumes:
+      - ./.env:/.env
     depends_on:
       db:
         condition: service_healthy
-  
+
   ml-service:
     container_name: python-ml
     command: tail -f /dev/null
@@ -49,17 +52,15 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
-    healthcheck: # 起動を待つためのヘルスチェック
+    healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "db"]
       interval: 5s
       timeout: 3s
       retries: 5
 
-# サービス間で通信するためのカスタムネットワークを定義
 networks:
     app_network:
       driver: bridge
 
-# Dockerボリュームを定義し、データベースのデータを永続化
 volumes:
   db_data:
