@@ -13,21 +13,20 @@ import (
 	"server/internal/models"
 )
 
-// AuthHandlerは認証関連のAPIハンドラをまとめます。
+// AuthHandler は認証関連のAPIハンドラをまとめます。
 // この構造体は、ハンドラが依存する外部リソース（DBやFirebase認証クライアント）を保持します。
 type AuthHandler struct {
 	DB           *gorm.DB
 	FirebaseAuth *auth.Client
 }
 
-// NewAuthHandlerは新しいAuthHandlerのインスタンスを作成します。
+// NewAuthHandler は新しいAuthHandlerのインスタンスを作成します。
 // データベースクライアントとFirebase認証クライアントを引数として受け取り、ハンドラに注入します。
-// Firebase Authクライアントの初期化は、メインアプリケーションの起動時に一度だけ行われるべきです。
 func NewAuthHandler(db *gorm.DB, firebaseAuthClient *auth.Client) *AuthHandler {
 	return &AuthHandler{DB: db, FirebaseAuth: firebaseAuthClient}
 }
 
-// RegisterRequestは/registerエンドポイントへのリクエストボディの構造体です。
+// RegisterRequest は/registerエンドポイントへのリクエストボディの構造体です。
 // クライアントから送られるFirebase IDトークンと、アプリケーション固有のユーザー情報を含みます。
 type RegisterRequest struct {
 	IDToken         string `json:"id_token" binding:"required"`
@@ -37,7 +36,7 @@ type RegisterRequest struct {
 	EMail           string `json:"email" binding:"required,email"`
 }
 
-// Registerは新しいユーザーを登録します (POST /register)。
+// Register は新しいユーザーを登録します (POST /register)。
 // クライアントから送られてきたFirebase IDトークンを検証し、その後にユーザー情報をデータベースに保存します。
 // このエンドポイント自体に認証ミドルウェアは適用されません。
 func (h *AuthHandler) Register(c *gin.Context) {
