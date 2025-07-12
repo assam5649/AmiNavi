@@ -2,7 +2,6 @@ package models
 
 import "time"
 
-// Work はデータベースの 'works' テーブルに対応する構造体です。
 type Work struct {
 	ID        int       `json:"id"`
 	UserID    int       `json:"user_id"`
