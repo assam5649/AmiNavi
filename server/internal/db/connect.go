@@ -12,8 +12,6 @@ import (
 
 var DB *gorm.DB
 
-// Connect は環境変数を使用してデータベースへの接続を確立します。
-// 最大10回までリトライを行い、接続が成功するかタイムアウトするまで待機します。
 func Connect() error {
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
