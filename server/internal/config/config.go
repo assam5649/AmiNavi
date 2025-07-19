@@ -28,7 +28,6 @@ type DatabaseConfig struct {
 }
 
 // Load は環境変数からアプリケーションの設定をロードし、Config構造体へのポインタを返します。
-// 環境変数が設定されていない場合、デフォルト値を使用するか、致命的なエラーを発生させます。
 func Load() *Config {
 	port := os.Getenv("PORT")
 	if port == "" {

@@ -20,9 +20,6 @@ func NewAuthHandler(db *gorm.DB, firebaseAuthClient *firebase.Client) *AuthHandl
 	return &AuthHandler{DB: db, FirebaseAuth: firebaseAuthClient}
 }
 
-// Register は新しいユーザーを登録します (POST /register)。
-// クライアントから送られてきたFirebase IDトークンを検証し、その後にユーザー情報をデータベースに保存します。
-// このエンドポイント自体に認証ミドルウェアは適用されません。
 func (h *AuthHandler) Register(c *gin.Context) {
 	var register post.RegisterResponse
 	var user models.User

@@ -34,7 +34,7 @@ func NewRouter(db *gorm.DB, firebaseAuthClient *firebaseAuth.Client) *gin.Engine
 			})
 		})
 
-		r.POST("/register", authHandler.Register)
+		api.POST("/register", authHandler.Register)
 	}
 
 	return r

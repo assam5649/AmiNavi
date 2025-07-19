@@ -12,7 +12,7 @@ func FindByUID(uid string) (models.User, bool, error) {
 		return models.User{}, false, err
 	}
 
-	result := DB.Where("uid = ?", uid).Find(&user)
+	result := DB.Where("firebase_uid = ?", uid).Find(&user)
 	if result.Error != nil {
 		return models.User{}, false, result.Error
 	}

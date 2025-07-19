@@ -17,7 +17,7 @@ import (
 func main() {
 	cfg := config.Load()
 
-	err := db.Connect()
+	_, err := db.Connect()
 	if err != nil {
 		log.Fatalf("FATAL: Failed to connect to database: %v", err)
 	}

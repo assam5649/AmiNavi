@@ -11,7 +11,6 @@ import (
 )
 
 // InitFirebaseAuthClient はFirebase Admin SDKを初期化し、
-// Firebase Authenticationクライアントを返します。
 // この関数はアプリケーションの起動時に一度だけ呼び出します
 func InitFirebaseAuthClient() *auth.Client {
 	serviceAccountKeyPath := os.Getenv("FIREBASE_SERVICE_ACCOUNT_KEY_PATH")
