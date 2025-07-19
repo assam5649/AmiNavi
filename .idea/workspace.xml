@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="14ea3178-366a-4265-ae8d-dc6c85bdf66d" name="変更" comment="">
+      <change afterPath="$PROJECT_DIR$/.gitattributes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/AmiNavi.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/db/migrations/000001_create_users_table.down.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/db/migrations/000001_create_users_table.up.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/db/migrations/000002_create_works_table.down.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/db/migrations/000002_create_works_table.up.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/internal/dto/post/register.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/internal/dto/post/works.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/internal/dto/put/register.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/internal/dto/put/works.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/internal/services/work_services.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/scripts/entry.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/server/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/cmd/api/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/cmd/api/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/cmd/migrate/main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/internal/auth/firebase.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/internal/auth/firebase.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/internal/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/internal/config/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/internal/db/auth_repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/internal/db/auth_repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/internal/db/connect_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/internal/db/connect_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/internal/db/migrate.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/internal/db/migrate.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/internal/handler/auth_handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/internal/handler/auth_handler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/internal/models/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/internal/models/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/internal/models/work.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/internal/models/work.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/internal/router/auth_routes.go" beforeDir="false" afterPath="$PROJECT_DIR$/server/internal/router/auth_routes.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/internal/services/.keep" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" url="file://$USER_HOME$/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.24.4.windows-amd64" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;history&quot;: [
+    {
+      &quot;assignee&quot;: &quot;assam5649&quot;
+    }
+  ],
+  &quot;lastFilter&quot;: {
+    &quot;assignee&quot;: &quot;assam5649&quot;
+  }
+}</component>
+  <component name="GitToolBoxStore">
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="issue-15" />
+                    <option name="lastUsedInstant" value="1752914123" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="issue-17" />
+                    <option name="lastUsedInstant" value="1752821350" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="main" />
+                    <option name="lastUsedInstant" value="1751671109" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="issue-16" />
+                    <option name="lastUsedInstant" value="1751670537" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
+  </component>
+  <component name="GithubProjectSettings">
+    <option name="branchProtectionPatterns">
+      <list>
+        <option value="main" />
+      </list>
+    </option>
+  </component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/assam5649/AmiNavi.git&quot;,
+    &quot;accountId&quot;: &quot;2bfad0cb-65f7-4bd6-bb0b-24b6944a774f&quot;
+  }
+}</component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="2z19JJRFo5WeCDpGXJ6xXu0inpc" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.GoLinterPluginOnboarding&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.GoLinterPluginStorageMigration&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
+    &quot;SHELLCHECK.PATH&quot;: &quot;気にする&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;issue-15 をマージ中&quot;,
+    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
+    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/user/general/AmiNavi&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/新規スクラッチファイル&quot;: [
+      &quot;MySQL&quot;
+    ]
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\user\general\AmiNavi\server\internal\dto\post" />
+      <recent name="C:\Users\user\general\AmiNavi\server\internal\dto" />
+      <recent name="C:\Users\user\general\AmiNavi\server\internal\models\v1" />
+      <recent name="C:\Users\user\general\AmiNavi\server\db" />
+      <recent name="C:\Users\user\general\AmiNavi\server" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-gosdk-3b128438d3f6-07d2d2d66b1e-org.jetbrains.plugins.go.sharedIndexes.bundled-GO-251.26927.50" />
+        <option value="bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-GO-251.26927.50" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="デフォルトタスク">
+      <changelist id="14ea3178-366a-4265-ae8d-dc6c85bdf66d" name="変更" comment="" />
+      <created>1750887638741</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1750887638741</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VgoProject">
+    <settings-migrated>true</settings-migrated>
+  </component>
+</project>

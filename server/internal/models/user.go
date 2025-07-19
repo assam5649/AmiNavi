@@ -8,7 +8,7 @@ type User struct {
 	LoginID         string    `json:"login_id"`
 	DisplayName     string    `json:"display_name"`
 	ProfileImageURL string    `json:"profile_image_url"`
-	EMail           string    `json:"email"`
+	Email           string    `json:"email"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
 }
