@@ -1,10 +1,14 @@
 CREATE TABLE IF NOT EXISTS users (
-    id INTEGER,
-    firebase_uid VARCHAR(256),
-    login_id VARCHAR(256),
+    id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    firebase_uid VARCHAR(256)
+        CHARACTER SET utf8mb4
+        COLLATE utf8mb4_0900_ai_ci
+        UNIQUE NOT NULL,
+    login_id VARCHAR(256) UNIQUE,
+    password_hash VARCHAR(256),
     display_name VARCHAR(256),
     profile_image_url VARCHAR(256),
-    email VARCHAR(256),
-    created_at DATE,
-    updated_at DATE
-)
+    email VARCHAR(256) UNIQUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

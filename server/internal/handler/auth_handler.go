@@ -5,7 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"net/http"
+	"reflect"
 	"server/internal/auth"
+	"server/internal/dto/patch"
 	"server/internal/dto/post"
 	"server/internal/models"
 	"server/internal/services"
@@ -20,7 +22,7 @@ func NewAuthHandler(db *gorm.DB, firebaseAuthClient *firebase.Client) *AuthHandl
 	return &AuthHandler{DB: db, FirebaseAuth: firebaseAuthClient}
 }
 
-func (h *AuthHandler) Register(c *gin.Context) {
+func (h *AuthHandler) UserRegister(c *gin.Context) {
 	var register post.RegisterResponse
 	var user models.User
 
@@ -45,6 +47,40 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	register.CreatedAt = user.CreatedAt
 
 	c.JSON(http.StatusCreated, register)
+
+	return
+}
+func (h *AuthHandler) UserUpdate(c *gin.Context) {
+	var update patch.UpdateRequest
+	var response patch.UpdateResponse
+
+	uid, exists := auth.GetUIDFromContext(c)
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Firebase UID not found in context after authentication"})
+		return
+	}
+
+	err := c.ShouldBindJSON(&update)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	if reflect.DeepEqual(update, patch.UpdateRequest{}) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	id, err, date := services.Update(uid, &update)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+	}
+
+	response.Message = "Patch Successfully"
+	response.ID = id
+	response.UpdatedAt = date
+
+	c.JSON(http.StatusOK, response)
 
 	return
 }
