@@ -2,4 +2,5 @@
 *.sh text eol=lf
 
 **.html linguist-detectable=false
+docs/* linguist-vendored
 text=auto
