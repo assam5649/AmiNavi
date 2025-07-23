@@ -10,5 +10,5 @@
 
 ## API
 
-すべての通信においてFirebase UIDをヘッダに付加する
+すべての通信においてFirebase UIDをヘッダに付加する<br>
 [APIドキュメント](https://assam5649.github.io/AmiNavi/api.html)
