@@ -1,7 +1,9 @@
 package db
 
 import (
+	"server/internal/dto/patch"
 	"server/internal/models"
+	"time"
 )
 
 func FindByUID(uid string) (models.User, bool, error) {
@@ -40,4 +42,26 @@ func Create(uid string) (models.User, error) {
 	}
 
 	return user, nil
+}
+
+func Update(uid string, request *patch.UpdateRequest) (int, error, time.Time) {
+	var user models.User
+	user.DisplayName = request.DisplayName
+	user.ProfileImageURL = request.ProfileImageURL
+
+	DB, err := Connect()
+	if err != nil {
+		return 0, err, time.Time{}
+	}
+
+	result := DB.Model(&user).Where("firebase_uid = ?", uid).Updates(models.User{DisplayName: user.DisplayName, ProfileImageURL: user.ProfileImageURL})
+	if result.Error != nil {
+		return 0, result.Error, time.Time{}
+	}
+
+	result = DB.First(&user, "firebase_uid = ?", uid)
+	if result.Error != nil {
+		return 0, result.Error, time.Time{}
+	}
+	return user.ID, nil, user.UpdatedAt
 }

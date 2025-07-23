@@ -2,7 +2,9 @@ package services
 
 import (
 	"server/internal/db"
+	"server/internal/dto/patch"
 	"server/internal/models"
+	"time"
 )
 
 func RegisterIfNotExists(uid string) (models.User, bool, error) {
@@ -17,4 +19,13 @@ func RegisterIfNotExists(uid string) (models.User, bool, error) {
 	}
 
 	return registerModel, exists, nil
+}
+
+func Update(uid string, request *patch.UpdateRequest) (int, error, time.Time) {
+	id, err, date := db.Update(uid, request)
+	if err != nil {
+		return 0, err, time.Time{}
+	}
+
+	return id, nil, date
 }
