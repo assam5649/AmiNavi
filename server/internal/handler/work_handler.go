@@ -113,7 +113,11 @@ func (h *WorkHandler) GetByID(c *gin.Context) {
 
 }
 
-func (h *WorkHandler) UpdateByID(c *gin.Context) {
+func (h *WorkHandler) PutByID(c *gin.Context) {
+
+}
+
+func (h *WorkHandler) PatchByID(c *gin.Context) {
 
 }
 
