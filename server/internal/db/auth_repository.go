@@ -26,7 +26,7 @@ func FindByUID(uid string) (models.User, bool, error) {
 	return models.User{}, false, nil
 }
 
-func Create(uid string) (models.User, error) {
+func CreateUser(uid string) (models.User, error) {
 	var user models.User
 	user.DisplayName = "Amip"
 	user.FirebaseUID = uid

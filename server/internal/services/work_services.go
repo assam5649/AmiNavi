@@ -2,6 +2,7 @@ package services
 
 import (
 	"server/internal/db"
+	"server/internal/dto/post"
 	"server/internal/models"
 )
 
@@ -21,4 +22,11 @@ func GetCompleted(uid string) ([]models.Work, error) {
 	}
 
 	return workModel, nil
+}
+
+func CreateWork(uid string, work *post.WorksRequest) error {
+	if err := db.CreateWork(uid, work); err != nil {
+		return err
+	}
+	return nil
 }

@@ -1,8 +1,15 @@
 package post
 
-type Works struct {
-	Title    string `json:"title"`
-	WorkURL  string `json:"work_url"`
-	Count    int    `json:"count"`
-	Bookmark bool   `json:"bookmark"`
+import "time"
+
+type WorksRequest struct {
+	Title       string `json:"title"`
+	WorkUrl     string `json:"work_url"`
+	Description string `json:"description"`
+}
+
+type WorksResponse struct {
+	Message   string    `json:"message"`
+	Id        int       `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
 }

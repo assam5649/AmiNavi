@@ -1,5 +1,6 @@
 package handler
 
+import "C"
 import (
 	firebase "firebase.google.com/go/v4/auth"
 	"github.com/gin-gonic/gin"
@@ -7,6 +8,7 @@ import (
 	"net/http"
 	"server/internal/auth"
 	"server/internal/dto/get"
+	"server/internal/dto/post"
 	"server/internal/models"
 	"server/internal/services"
 	"strconv"
@@ -79,7 +81,32 @@ func (h *WorkHandler) GetAll(c *gin.Context) {
 }
 
 func (h *WorkHandler) Create(c *gin.Context) {
+	var request post.WorksRequest
+	var response post.WorksResponse
+	var work models.Work
 
+	uid, exists := auth.GetUIDFromContext(c)
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Firebase UID not found in context after authentication"})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+	}
+
+	if err := services.CreateWork(uid, &request); err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	response.Message = "The work has been successfully created."
+	response.Id = work.ID
+	response.CreatedAt = work.CreatedAt
+
+	c.JSON(http.StatusCreated, response)
+
+	return
 }
 
 func (h *WorkHandler) GetByID(c *gin.Context) {

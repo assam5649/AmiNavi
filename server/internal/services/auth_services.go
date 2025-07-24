@@ -13,7 +13,7 @@ func RegisterIfNotExists(uid string) (models.User, bool, error) {
 		return userModel, exists, err
 	}
 
-	registerModel, err := db.Create(uid)
+	registerModel, err := db.CreateUser(uid)
 	if err != nil {
 		return models.User{}, exists, err
 	}
