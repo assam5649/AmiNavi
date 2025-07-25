@@ -9,6 +9,5 @@
 本バックエンドではユーザー管理、編み図データの管理、モバイルアプリとの同期処理を担当します。
 
 ## API
-
-すべての通信においてFirebase UIDをヘッダに付加する<br>
-[APIドキュメント](https://assam5649.github.io/AmiNavi/api.html)
+このプロジェクトでは、Redocly CLI を使用して OpenAPI 仕様から HTML ドキュメントを生成しています。<br>
+#### You can view the API documentation [here](https://assam5649.github.io/AmiNavi/api.html).
