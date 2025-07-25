@@ -22,7 +22,7 @@ func NewAuthHandler(db *gorm.DB, firebaseAuthClient *firebase.Client) *AuthHandl
 	return &AuthHandler{DB: db, FirebaseAuth: firebaseAuthClient}
 }
 
-func (h *AuthHandler) UserRegister(c *gin.Context) {
+func (h *AuthHandler) Register(c *gin.Context) {
 	var register post.RegisterResponse
 	var user models.User
 
@@ -50,7 +50,7 @@ func (h *AuthHandler) UserRegister(c *gin.Context) {
 
 	return
 }
-func (h *AuthHandler) UserUpdate(c *gin.Context) {
+func (h *AuthHandler) Update(c *gin.Context) {
 	var update patch.UpdateRequest
 	var response patch.UpdateResponse
 

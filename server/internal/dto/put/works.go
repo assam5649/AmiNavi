@@ -1,8 +1,19 @@
 package put
 
-type Works struct {
-	Title    string `json:"title"`
-	WorkURL  string `json:"work_url"`
-	Count    int    `json:"count"`
-	Bookmark bool   `json:"bookmark"`
+import "time"
+
+type WorksIDRequest struct {
+	Title       string `json:"title"`
+	Author      string `json:"author"`
+	WorkUrl     string `json:"work_url"`
+	RawIndex    int    `json:"raw_index"`
+	StitchIndex int    `json:"stitch_index"`
+	IsCompleted bool   `json:"is_completed"`
+	Description string `json:"description"`
+}
+
+type WorksIDResponse struct {
+	Message   string    `json:"message"`
+	Id        int       `json:"id"`
+	UpdatedAt time.Time `json:"updated_at"`
 }

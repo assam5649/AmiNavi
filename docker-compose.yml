@@ -20,6 +20,7 @@ services:
       - FIREBASE_SERVICE_ACCOUNT_KEY_PATH=${FIREBASE_SERVICE_ACCOUNT_KEY_PATH}
     volumes:
       - ./.env:/.env
+      - ./aminavi-46dfc-firebase-adminsdk-fbsvc-54a4015174.json:/app/aminavi-46dfc-firebase-adminsdk-fbsvc-54a4015174.json
     depends_on:
       db:
         condition: service_healthy
