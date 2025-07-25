@@ -3,6 +3,7 @@ package db
 import (
 	"server/internal/dto/post"
 	"server/internal/models"
+	"time"
 )
 
 func GetByUID(uid string) ([]models.Work, error) {
@@ -61,4 +62,34 @@ func CreateWork(uid string, request *post.WorksRequest) error {
 	}
 
 	return nil
+}
+
+func GetByID(uid string, id int) (models.Work, error) {
+	var work models.Work
+
+	DB, err := Connect()
+	if err != nil {
+		return models.Work{}, err
+	}
+
+	result := DB.Where("id = ? AND author = ?", id, uid).Find(&work)
+	if result.Error != nil {
+		return models.Work{}, result.Error
+	}
+
+	return work, nil
+}
+
+func PutByID(uid string, id int, work *models.Work) (int, time.Time, error) {
+	DB, err := Connect()
+	if err != nil {
+		return 0, time.Time{}, err
+	}
+
+	result := DB.Create(work)
+	if result.Error != nil {
+		return 0, time.Time{}, result.Error
+	}
+
+	return work.ID, work.UpdatedAt, nil
 }
