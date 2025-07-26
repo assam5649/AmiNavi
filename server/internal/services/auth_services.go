@@ -4,28 +4,30 @@ import (
 	"server/internal/db"
 	"server/internal/dto/patch"
 	"server/internal/models"
-	"time"
 )
 
-func RegisterIfNotExists(uid string) (models.User, bool, error) {
-	userModel, exists, err := db.FindByUID(uid)
+func RegisterIfNotExists(uid string) (*models.User, bool, error) {
+	user, exists, err := db.FindByUID(uid)
 	if exists {
-		return userModel, exists, err
+		return user, exists, err
 	}
 
-	registerModel, err := db.Create(uid)
+	registerModel, err := db.CreateUser(uid)
 	if err != nil {
-		return models.User{}, exists, err
+		return nil, exists, err
 	}
 
 	return registerModel, exists, nil
 }
 
-func Update(uid string, request *patch.UpdateRequest) (int, error, time.Time) {
-	id, err, date := db.Update(uid, request)
-	if err != nil {
-		return 0, err, time.Time{}
+func Update(uid string, request *patch.UpdateRequest) (*models.User, error) {
+	var user models.User
+	user.DisplayName = request.DisplayName
+	user.ProfileImageURL = request.ProfileImageURL
+
+	if err := db.Update(uid, &user); err != nil {
+		return nil, err
 	}
 
-	return id, nil, date
+	return &user, nil
 }

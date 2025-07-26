@@ -8,7 +8,7 @@ type UpdateRequest struct {
 }
 
 type UpdateResponse struct {
-	Message   string    `json:"message"`
-	ID        int       `json:"id"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          int       `json:"id"`
+	DisplayName string    `json:"display_name"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }

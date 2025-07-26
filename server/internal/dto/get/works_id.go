@@ -1,15 +1,8 @@
-package post
+package get
 
 import "time"
 
-type WorksRequest struct {
-	Title       string `json:"title"`
-	WorkUrl     string `json:"work_url"`
-	Description string `json:"description"`
-}
-
-type WorksResponse struct {
-	ID          int        `json:"id"`
+type WorksIDResponse struct {
 	Title       string     `json:"title"`
 	WorkUrl     string     `json:"work_url"`
 	RawIndex    int        `json:"raw_index"`
