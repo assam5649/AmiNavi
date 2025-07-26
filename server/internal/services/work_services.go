@@ -2,6 +2,7 @@ package services
 
 import (
 	"server/internal/db"
+	"server/internal/dto/patch"
 	"server/internal/dto/post"
 	"server/internal/dto/put"
 	"server/internal/models"
@@ -58,4 +59,29 @@ func PutByID(uid string, id int, request *put.WorksIDRequest) (int, time.Time, e
 	}
 
 	return id, date, nil
+}
+
+func PatchByID(uid string, id int, request *patch.WorksIDRequest) (int, time.Time, error) {
+	var work = models.Work{
+		RawIndex:    request.RawIndex,
+		StitchIndex: request.RawIndex,
+		IsCompleted: request.IsCompleted,
+	}
+	id, date, err := db.PatchByID(uid, id, &work)
+	if err != nil {
+		return 0, time.Time{}, err
+	}
+
+	return id, date, nil
+}
+
+func DeleteByID(uid string, id int) (int, string, time.Time, error) {
+	var work = models.Work{}
+	id, title, date, err := db.DeleteByID(uid, id, &work)
+	if err != nil {
+		return 0, "", time.Time{}, err
+	}
+
+	return id, title, date, nil
+
 }

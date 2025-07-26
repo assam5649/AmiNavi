@@ -86,10 +86,50 @@ func PutByID(uid string, id int, work *models.Work) (int, time.Time, error) {
 		return 0, time.Time{}, err
 	}
 
-	result := DB.Create(work)
+	result := DB.Model(work).Where("id = ? AND author = ?", id, uid).Updates(work)
+	if result.Error != nil {
+		return 0, time.Time{}, result.Error
+	}
+
+	result = DB.First(work, work.ID)
 	if result.Error != nil {
 		return 0, time.Time{}, result.Error
 	}
 
 	return work.ID, work.UpdatedAt, nil
+}
+
+func PatchByID(uid string, id int, work *models.Work) (int, time.Time, error) {
+	DB, err := Connect()
+	if err != nil {
+		return 0, time.Time{}, err
+	}
+
+	result := DB.Model(work).Where("id = ? AND author = ?", id, uid).Updates(work)
+	if result.Error != nil {
+		return 0, time.Time{}, result.Error
+	}
+
+	result = DB.First(work, work.ID)
+	if result.Error != nil {
+		return 0, time.Time{}, result.Error
+	}
+
+	return work.ID, work.UpdatedAt, nil
+}
+
+func DeleteByID(uid string, id int, work *models.Work) (int, string, time.Time, error) {
+	DB, err := Connect()
+	if err != nil {
+		return 0, "", time.Time{}, err
+	}
+
+	result := DB.Where("id = ? AND author = ?", id, uid).Delete(work)
+	if result.Error != nil {
+		return 0, "", time.Time{}, result.Error
+	}
+
+	now := time.Now()
+
+	return work.ID, work.Title, now, nil
 }

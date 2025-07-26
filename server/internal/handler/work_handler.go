@@ -7,7 +7,9 @@ import (
 	"gorm.io/gorm"
 	"net/http"
 	"server/internal/auth"
+	"server/internal/dto/delete"
 	"server/internal/dto/get"
+	"server/internal/dto/patch"
 	"server/internal/dto/post"
 	"server/internal/dto/put"
 	"server/internal/models"
@@ -148,7 +150,6 @@ func (h *WorkHandler) GetByID(c *gin.Context) {
 }
 
 func (h *WorkHandler) PutByID(c *gin.Context) {
-	var work models.Work
 	var request put.WorksIDRequest
 	var response put.WorksIDResponse
 
@@ -170,17 +171,76 @@ func (h *WorkHandler) PutByID(c *gin.Context) {
 		return
 	}
 
-	work, err = services.PutByID(uid, id, request)
+	response.Id, response.UpdatedAt, err = services.PutByID(uid, id, &request)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
 
+	response.Message = "The work has been successfully updated."
 	c.JSON(http.StatusOK, response)
 
 	return
 }
 
 func (h *WorkHandler) PatchByID(c *gin.Context) {
+	var request patch.WorksIDRequest
+	var response patch.WorksIDResponse
 
+	uid, exists := auth.GetUIDFromContext(c)
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Firebase UID not found in context after authentication"})
+		return
+	}
+
+	i := c.Param("id")
+	id, err := strconv.Atoi(i)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Request Body"})
+		return
+	}
+
+	if err = c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	response.ID, response.UpdatedAt, err = services.PatchByID(uid, id, &request)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+	}
+
+	response.Message = "The work has been successfully updated."
+
+	c.JSON(http.StatusOK, response)
+
+	return
 }
 
 func (h *WorkHandler) DeleteByID(c *gin.Context) {
+	var response delete.WorksIDResponse
 
+	uid, exists := auth.GetUIDFromContext(c)
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Firebase UID not found in context after authentication"})
+		return
+	}
+
+	i := c.Param("id")
+	id, err := strconv.Atoi(i)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid path"})
+		return
+	}
+
+	response.ID, response.Title, response.DeletedAt, err = services.DeleteByID(uid, id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return
+	}
+	response.Message = "The work has been successfully deleted."
+
+	c.JSON(http.StatusOK, response)
+
+	return
 }
