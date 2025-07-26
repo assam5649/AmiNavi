@@ -1,9 +1,8 @@
 package db
 
 import (
-	"server/internal/dto/post"
+	"gorm.io/gorm"
 	"server/internal/models"
-	"time"
 )
 
 func GetByUID(uid string) ([]models.Work, error) {
@@ -38,25 +37,13 @@ func GetCompleted(uid string) ([]models.Work, error) {
 	return work, nil
 }
 
-func CreateWork(uid string, request *post.WorksRequest) error {
-	var work models.Work
-
-	work.Author = uid
-	work.Title = request.Title
-	work.WorkURL = request.WorkUrl
-	work.Description = request.Description
-	work.IsCompleted = false
-	work.Bookmark = false
-	work.RawIndex = 0
-	work.StitchIndex = 0
-	work.CompletedAt = nil
-
+func CreateWork(work *models.Work) error {
 	DB, err := Connect()
 	if err != nil {
 		return err
 	}
 
-	result := DB.Create(&work)
+	result := DB.Create(work)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -64,72 +51,70 @@ func CreateWork(uid string, request *post.WorksRequest) error {
 	return nil
 }
 
-func GetByID(uid string, id int) (models.Work, error) {
+func GetByID(uid string, id int) (*models.Work, error) {
 	var work models.Work
 
 	DB, err := Connect()
 	if err != nil {
-		return models.Work{}, err
+		return nil, err
 	}
 
 	result := DB.Where("id = ? AND author = ?", id, uid).Find(&work)
 	if result.Error != nil {
-		return models.Work{}, result.Error
+		return nil, result.Error
 	}
 
-	return work, nil
+	return &work, nil
 }
 
-func PutByID(uid string, id int, work *models.Work) (int, time.Time, error) {
+func PutByID(uid string, id int, work *models.Work) error {
 	DB, err := Connect()
 	if err != nil {
-		return 0, time.Time{}, err
+		return err
 	}
 
 	result := DB.Model(work).Where("id = ? AND author = ?", id, uid).Updates(work)
 	if result.Error != nil {
-		return 0, time.Time{}, result.Error
+		return result.Error
 	}
 
-	result = DB.First(work, work.ID)
+	result = DB.First(work, id)
 	if result.Error != nil {
-		return 0, time.Time{}, result.Error
+		return result.Error
 	}
 
-	return work.ID, work.UpdatedAt, nil
+	return nil
 }
 
-func PatchByID(uid string, id int, work *models.Work) (int, time.Time, error) {
+func PatchByID(uid string, id int, work *models.Work) error {
 	DB, err := Connect()
 	if err != nil {
-		return 0, time.Time{}, err
+		return err
 	}
 
 	result := DB.Model(work).Where("id = ? AND author = ?", id, uid).Updates(work)
 	if result.Error != nil {
-		return 0, time.Time{}, result.Error
+		return result.Error
 	}
 
-	result = DB.First(work, work.ID)
+	result = DB.First(work, id)
 	if result.Error != nil {
-		return 0, time.Time{}, result.Error
+		return result.Error
 	}
 
-	return work.ID, work.UpdatedAt, nil
+	return nil
 }
 
-func DeleteByID(uid string, id int, work *models.Work) (int, string, time.Time, error) {
+func DeleteByID(uid string, id int, work *models.Work) (*gorm.DB, error) {
 	DB, err := Connect()
 	if err != nil {
-		return 0, "", time.Time{}, err
+		return nil, err
 	}
 
 	result := DB.Where("id = ? AND author = ?", id, uid).Delete(work)
 	if result.Error != nil {
-		return 0, "", time.Time{}, result.Error
+		return nil, result.Error
 	}
 
-	now := time.Now()
-
-	return work.ID, work.Title, now, nil
+	return result, nil
 }

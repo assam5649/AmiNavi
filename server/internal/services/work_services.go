@@ -1,18 +1,24 @@
 package services
 
 import (
+	"errors"
+	"gorm.io/gorm"
 	"server/internal/db"
 	"server/internal/dto/patch"
 	"server/internal/dto/post"
 	"server/internal/dto/put"
 	"server/internal/models"
-	"time"
+)
+
+var (
+	ErrWorkNotFound = errors.New("work not found")
+	ErrForbidden    = errors.New("unauthorized access to work")
 )
 
 func GetAllByUID(uid string) ([]models.Work, error) {
 	workModel, err := db.GetByUID(uid)
 	if err != nil {
-		return []models.Work{}, err
+		return nil, err
 	}
 
 	return workModel, nil
@@ -21,67 +27,106 @@ func GetAllByUID(uid string) ([]models.Work, error) {
 func GetCompleted(uid string) ([]models.Work, error) {
 	workModel, err := db.GetCompleted(uid)
 	if err != nil {
-		return []models.Work{}, err
+		return nil, err
 	}
 
 	return workModel, nil
 }
 
-func CreateWork(uid string, work *post.WorksRequest) error {
-	if err := db.CreateWork(uid, work); err != nil {
-		return err
+func CreateWork(uid string, request *post.WorksRequest) (*models.Work, error) {
+	var work = models.Work{
+		Author:      uid,
+		Title:       request.Title,
+		WorkURL:     request.WorkUrl,
+		Description: request.Description,
+		RawIndex:    0,
+		StitchIndex: 0,
+		IsCompleted: false,
+		Bookmark:    false,
+		CompletedAt: nil,
 	}
-	return nil
+	if err := db.CreateWork(&work); err != nil {
+		return nil, err
+	}
+	return &work, nil
 }
 
-func GetByID(uid string, id int) (models.Work, error) {
-	workModel, err := db.GetByID(uid, id)
+func GetByID(uid string, id int) (*models.Work, error) {
+	work, err := db.GetByID(uid, id)
 	if err != nil {
-		return models.Work{}, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrWorkNotFound
+		}
+		if work.Author != uid {
+			return nil, ErrForbidden
+		}
+
+		return nil, err
 	}
 
-	return workModel, nil
+	return work, nil
 }
 
-func PutByID(uid string, id int, request *put.WorksIDRequest) (int, time.Time, error) {
+func PutByID(uid string, id int, request *put.WorksIDRequest) (*models.Work, error) {
 	var work = models.Work{
 		Title:       request.Title,
-		Author:      request.Author,
 		WorkURL:     request.WorkUrl,
 		RawIndex:    request.RawIndex,
 		StitchIndex: request.StitchIndex,
 		IsCompleted: request.IsCompleted,
 		Description: request.Description,
 	}
-	id, date, err := db.PutByID(uid, id, &work)
-	if err != nil {
-		return 0, time.Time{}, err
+
+	if err := db.PutByID(uid, id, &work); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrWorkNotFound
+		}
+		if work.Author != uid {
+			return nil, ErrForbidden
+		}
+
+		return nil, err
 	}
 
-	return id, date, nil
+	return &work, nil
 }
 
-func PatchByID(uid string, id int, request *patch.WorksIDRequest) (int, time.Time, error) {
+func PatchByID(uid string, id int, request *patch.WorksIDRequest) (*models.Work, error) {
 	var work = models.Work{
 		RawIndex:    request.RawIndex,
 		StitchIndex: request.RawIndex,
 		IsCompleted: request.IsCompleted,
 	}
-	id, date, err := db.PatchByID(uid, id, &work)
-	if err != nil {
-		return 0, time.Time{}, err
+
+	if err := db.PatchByID(uid, id, &work); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrWorkNotFound
+		}
+		if work.Author != uid {
+			return nil, ErrForbidden
+		}
+
+		return nil, err
 	}
 
-	return id, date, nil
+	return &work, nil
 }
 
-func DeleteByID(uid string, id int) (int, string, time.Time, error) {
+func DeleteByID(uid string, id int) error {
 	var work = models.Work{}
-	id, title, date, err := db.DeleteByID(uid, id, &work)
-	if err != nil {
-		return 0, "", time.Time{}, err
+
+	if work.Author != uid {
+		return ErrForbidden
 	}
 
-	return id, title, date, nil
+	result, err := db.DeleteByID(uid, id, &work)
+	if err != nil {
+		return err
+	}
 
+	if result.RowsAffected == 0 {
+		return ErrWorkNotFound
+	}
+
+	return nil
 }

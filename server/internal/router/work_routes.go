@@ -12,6 +12,7 @@ func WorkRouter(router *gin.RouterGroup, db *gorm.DB, firebaseAuthClient *fireba
 
 	router.GET("/works", workHandler.GetAll)
 	router.POST("/works", workHandler.Create)
+
 	router.GET("/works/:id", workHandler.GetByID)
 	router.PUT("/works/:id", workHandler.PutByID)
 	router.PATCH("/works/:id", workHandler.PatchByID)
