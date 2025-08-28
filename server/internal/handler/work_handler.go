@@ -3,9 +3,7 @@ package handler
 import "C"
 import (
 	"errors"
-	firebase "firebase.google.com/go/v4/auth"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"net/http"
 	"server/internal/auth"
 	"server/internal/dto/get"
@@ -18,12 +16,11 @@ import (
 )
 
 type WorkHandler struct {
-	DB           *gorm.DB
-	FirebaseAuth *firebase.Client
+	WorkService *services.WorkServices
 }
 
-func NewWorkHandler(db *gorm.DB, firebaseAuthClient *firebase.Client) *WorkHandler {
-	return &WorkHandler{DB: db, FirebaseAuth: firebaseAuthClient}
+func NewWorkHandler(workService *services.WorkServices) *WorkHandler {
+	return &WorkHandler{WorkService: workService}
 }
 
 func (h *WorkHandler) GetAll(c *gin.Context) {
@@ -45,7 +42,7 @@ func (h *WorkHandler) GetAll(c *gin.Context) {
 		}
 
 		if completed {
-			works, err = services.GetCompleted(uid)
+			works, err = h.WorkService.GetCompleted.GetCompleted(uid)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve completed works."})
 				return
@@ -68,7 +65,7 @@ func (h *WorkHandler) GetAll(c *gin.Context) {
 		}
 	}
 
-	works, err := services.GetAllByUID(uid)
+	works, err := h.WorkService.GetAll.GetAllByUID(uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve works."})
 		return
@@ -106,7 +103,7 @@ func (h *WorkHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body."})
 	}
 
-	work, err := services.CreateWork(uid, &request)
+	work, err := h.WorkService.CreateWork.CreateWork(uid, &request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create work."})
 		return
@@ -145,7 +142,7 @@ func (h *WorkHandler) GetByID(c *gin.Context) {
 		return
 	}
 
-	work, err = services.GetByID(uid, id)
+	work, err = h.WorkService.Get.GetByID(uid, id)
 	if err != nil {
 		if errors.Is(err, services.ErrWorkNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Work not found."})
@@ -195,7 +192,7 @@ func (h *WorkHandler) PutByID(c *gin.Context) {
 		return
 	}
 
-	work, err = services.PutByID(uid, id, &request)
+	work, err = h.WorkService.Put.PutByID(uid, id, &request)
 	if err != nil {
 		if errors.Is(err, services.ErrWorkNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Work not found."})
@@ -248,7 +245,7 @@ func (h *WorkHandler) PatchByID(c *gin.Context) {
 		return
 	}
 
-	work, err = services.PatchByID(uid, id, &request)
+	work, err = h.WorkService.Patch.PatchByID(uid, id, &request)
 	if err != nil {
 		if errors.Is(err, services.ErrWorkNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Work not found."})
@@ -292,7 +289,7 @@ func (h *WorkHandler) DeleteByID(c *gin.Context) {
 		return
 	}
 
-	if err = services.DeleteByID(uid, id); err != nil {
+	if err = h.WorkService.Delete.DeleteByID(uid, id); err != nil {
 		if errors.Is(err, services.ErrWorkNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Work not found."})
 			return
