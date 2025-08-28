@@ -1,14 +1,13 @@
 package router
 
 import (
-	firebaseAuth "firebase.google.com/go/v4/auth"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"server/internal/handler"
+	"server/internal/services"
 )
 
-func WorkRouter(router *gin.RouterGroup, db *gorm.DB, firebaseAuthClient *firebaseAuth.Client) {
-	workHandler := handler.NewWorkHandler(db, firebaseAuthClient)
+func WorkRouter(router *gin.RouterGroup, service *services.WorkServices) {
+	workHandler := handler.NewWorkHandler(service)
 
 	router.GET("/works", workHandler.GetAll)
 	router.POST("/works", workHandler.Create)
