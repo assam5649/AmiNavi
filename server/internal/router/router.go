@@ -1,20 +1,20 @@
 package router
 
 import (
-	firebaseAuth "firebase.google.com/go/v4/auth"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"server/internal/auth"
+	"server/internal/services"
 )
 
-func NewRouter(db *gorm.DB, firebaseAuthClient *firebaseAuth.Client) *gin.Engine {
+func NewRouter(authService *services.AuthServices, workService *services.WorkServices, mediaService *services.MediaServices) *gin.Engine {
 	r := gin.Default()
 	router := r.Group("/v1")
 
-	router.Use(auth.AuthMiddleware(firebaseAuthClient))
+	router.Use(auth.AuthMiddleware(authService.FirebaseAuth))
 	{
-		AuthRouter(router, db, firebaseAuthClient)
-		WorkRouter(router, db, firebaseAuthClient)
+		AuthRouter(router, authService)
+		WorkRouter(router, workService)
+		MediaRouter(router, mediaService)
 	}
 
 	return r
