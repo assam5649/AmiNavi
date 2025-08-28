@@ -1,7 +1,9 @@
 package main
 
 import (
+	"cloud.google.com/go/storage"
 	"context"
+	"google.golang.org/api/option"
 	"log"
 	"net/http"
 	"os"
@@ -10,14 +12,16 @@ import (
 	"server/internal/config"
 	"server/internal/db"
 	"server/internal/router"
+	"server/internal/services"
 	"syscall"
 	"time"
 )
 
 func main() {
 	cfg := config.Load()
+	credentialsFile := "aminavi-652103e6dc0c.json"
 
-	_, err := db.Connect()
+	DB, err := db.Connect()
 	if err != nil {
 		log.Fatalf("FATAL: Failed to connect to database: %v", err)
 	}
@@ -28,7 +32,56 @@ func main() {
 	}()
 	firebaseAuthClient := auth.InitFirebaseAuthClient()
 
-	r := router.NewRouter(db.DB, firebaseAuthClient)
+	ctx := context.Background()
+	gcsClient, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
+	if err != nil {
+		log.Fatalf("client initialize failed: %v", err)
+	}
+
+	register := &services.RegisterServiceImpl{DB: DB}
+	update := &services.UpdateServiceImpl{DB: DB}
+
+	authService := &services.AuthServices{
+		DB:           DB,
+		FirebaseAuth: firebaseAuthClient,
+		Register:     register,
+		Update:       update,
+	}
+
+	getAll := &services.GetAllServiceImpl{DB: DB}
+	getCompleted := &services.GetCompletedServiceImpl{DB: DB}
+	createWork := &services.CreateWorkServiceImpl{DB: DB}
+	get := &services.GetServiceImpl{DB: DB}
+	put := &services.PutServiceImpl{DB: DB}
+	patch := &services.PatchServiceImpl{DB: DB}
+	deleteWork := &services.DeleteServiceImpl{DB: DB}
+
+	workService := &services.WorkServices{
+		DB:           DB,
+		FirebaseAuth: firebaseAuthClient,
+		GetAll:       getAll,
+		GetCompleted: getCompleted,
+		CreateWork:   createWork,
+		Get:          get,
+		Put:          put,
+		Patch:        patch,
+		Delete:       deleteWork,
+	}
+
+	csvService := &services.CsvConversionServiceImpl{}
+	upload := &services.UploadServiceImpl{DB: DB, Storage: gcsClient}
+	request := &services.RequestConvertServiceImpl{DB: DB}
+
+	mediaService := &services.MediaServices{
+		DB:           DB,
+		FirebaseAuth: firebaseAuthClient,
+		Storage:      gcsClient,
+		CsvService:   csvService,
+		Upload:       upload,
+		Request:      request,
+	}
+
+	r := router.NewRouter(authService, workService, mediaService)
 
 	serverAddr := ":" + cfg.Server.Port
 	srv := &http.Server{
