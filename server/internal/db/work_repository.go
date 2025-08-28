@@ -5,13 +5,8 @@ import (
 	"server/internal/models"
 )
 
-func GetByUID(uid string) ([]models.Work, error) {
+func GetByUID(DB *gorm.DB, uid string) ([]models.Work, error) {
 	var work []models.Work
-
-	DB, err := Connect()
-	if err != nil {
-		return []models.Work{}, err
-	}
 
 	result := DB.Where("author = ?", uid).Find(&work)
 	if result.Error != nil {
@@ -21,13 +16,8 @@ func GetByUID(uid string) ([]models.Work, error) {
 	return work, nil
 }
 
-func GetCompleted(uid string) ([]models.Work, error) {
+func GetCompleted(DB *gorm.DB, uid string) ([]models.Work, error) {
 	var work []models.Work
-
-	DB, err := Connect()
-	if err != nil {
-		return []models.Work{}, err
-	}
 
 	result := DB.Where("author = ? AND is_completed = ?", uid, true).Find(&work)
 	if result.Error != nil {
@@ -37,12 +27,7 @@ func GetCompleted(uid string) ([]models.Work, error) {
 	return work, nil
 }
 
-func CreateWork(work *models.Work) error {
-	DB, err := Connect()
-	if err != nil {
-		return err
-	}
-
+func CreateWork(DB *gorm.DB, work *models.Work) error {
 	result := DB.Create(work)
 	if result.Error != nil {
 		return result.Error
@@ -51,13 +36,8 @@ func CreateWork(work *models.Work) error {
 	return nil
 }
 
-func GetByID(uid string, id int) (*models.Work, error) {
+func GetByID(DB *gorm.DB, uid string, id int) (*models.Work, error) {
 	var work models.Work
-
-	DB, err := Connect()
-	if err != nil {
-		return nil, err
-	}
 
 	result := DB.Where("id = ? AND author = ?", id, uid).Find(&work)
 	if result.Error != nil {
@@ -67,12 +47,7 @@ func GetByID(uid string, id int) (*models.Work, error) {
 	return &work, nil
 }
 
-func PutByID(uid string, id int, work *models.Work) error {
-	DB, err := Connect()
-	if err != nil {
-		return err
-	}
-
+func PutByID(DB *gorm.DB, uid string, id int, work *models.Work) error {
 	result := DB.Model(work).Where("id = ? AND author = ?", id, uid).Updates(work)
 	if result.Error != nil {
 		return result.Error
@@ -86,12 +61,7 @@ func PutByID(uid string, id int, work *models.Work) error {
 	return nil
 }
 
-func PatchByID(uid string, id int, work *models.Work) error {
-	DB, err := Connect()
-	if err != nil {
-		return err
-	}
-
+func PatchByID(DB *gorm.DB, uid string, id int, work *models.Work) error {
 	result := DB.Model(work).Where("id = ? AND author = ?", id, uid).Updates(work)
 	if result.Error != nil {
 		return result.Error
@@ -105,12 +75,7 @@ func PatchByID(uid string, id int, work *models.Work) error {
 	return nil
 }
 
-func DeleteByID(uid string, id int, work *models.Work) (*gorm.DB, error) {
-	DB, err := Connect()
-	if err != nil {
-		return nil, err
-	}
-
+func DeleteByID(DB *gorm.DB, uid string, id int, work *models.Work) (*gorm.DB, error) {
 	result := DB.Where("id = ? AND author = ?", id, uid).Delete(work)
 	if result.Error != nil {
 		return nil, result.Error
