@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	firebase "firebase.google.com/go/v4/auth"
 	"gorm.io/gorm"
 	"server/internal/db"
 	"server/internal/dto/patch"
@@ -10,13 +11,95 @@ import (
 	"server/internal/models"
 )
 
+type GetAllService interface {
+	GetAllByUID(uid string) ([]models.Work, error)
+}
+
+type GetCompletedService interface {
+	GetCompleted(uid string) ([]models.Work, error)
+}
+
+type CreateWorkService interface {
+	CreateWork(uid string, request *post.WorksRequest) (*models.Work, error)
+}
+
+type GetService interface {
+	GetByID(uid string, id int) (*models.Work, error)
+}
+
+type PutService interface {
+	PutByID(uid string, id int, request *put.WorksIDRequest) (*models.Work, error)
+}
+
+type PatchService interface {
+	PatchByID(uid string, id int, request *patch.WorksIDRequest) (*models.Work, error)
+}
+
+type DeleteService interface {
+	DeleteByID(uid string, id int) error
+}
+
+type GetAllServiceImpl struct {
+	DB *gorm.DB
+}
+type GetCompletedServiceImpl struct {
+	DB *gorm.DB
+}
+type CreateWorkServiceImpl struct {
+	DB *gorm.DB
+}
+type GetServiceImpl struct {
+	DB *gorm.DB
+}
+type PutServiceImpl struct {
+	DB *gorm.DB
+}
+type PatchServiceImpl struct {
+	DB *gorm.DB
+}
+type DeleteServiceImpl struct {
+	DB *gorm.DB
+}
+
+type WorkServices struct {
+	DB           *gorm.DB
+	FirebaseAuth *firebase.Client
+	GetAll       GetAllService
+	GetCompleted GetCompletedService
+	CreateWork   CreateWorkService
+	Get          GetService
+	Put          PutService
+	Patch        PatchService
+	Delete       DeleteService
+}
+
+func NewWorkService(
+	db *gorm.DB,
+	firebaseAuthClient *firebase.Client,
+	getAll GetAllService,
+	getCompleted GetCompletedService,
+	put PutService,
+	patch PatchService,
+	delete DeleteService,
+) *WorkServices {
+	return &WorkServices{
+		DB:           db,
+		FirebaseAuth: firebaseAuthClient,
+		GetAll:       getAll,
+		GetCompleted: getCompleted,
+		Put:          put,
+		Patch:        patch,
+		Delete:       delete,
+	}
+}
+
 var (
 	ErrWorkNotFound = errors.New("work not found")
 	ErrForbidden    = errors.New("unauthorized access to work")
 )
 
-func GetAllByUID(uid string) ([]models.Work, error) {
-	workModel, err := db.GetByUID(uid)
+func (s *GetAllServiceImpl) GetAllByUID(uid string) ([]models.Work, error) {
+	workModel, err := db.GetByUID(s.DB, uid)
 	if err != nil {
 		return nil, err
 	}
@@ -24,8 +107,8 @@ func GetAllByUID(uid string) ([]models.Work, error) {
 	return workModel, nil
 }
 
-func GetCompleted(uid string) ([]models.Work, error) {
-	workModel, err := db.GetCompleted(uid)
+func (s *GetCompletedServiceImpl) GetCompleted(uid string) ([]models.Work, error) {
+	workModel, err := db.GetCompleted(s.DB, uid)
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +116,7 @@ func GetCompleted(uid string) ([]models.Work, error) {
 	return workModel, nil
 }
 
-func CreateWork(uid string, request *post.WorksRequest) (*models.Work, error) {
+func (s *CreateWorkServiceImpl) CreateWork(uid string, request *post.WorksRequest) (*models.Work, error) {
 	var work = models.Work{
 		Author:      uid,
 		Title:       request.Title,
@@ -45,14 +128,14 @@ func CreateWork(uid string, request *post.WorksRequest) (*models.Work, error) {
 		Bookmark:    false,
 		CompletedAt: nil,
 	}
-	if err := db.CreateWork(&work); err != nil {
+	if err := db.CreateWork(s.DB, &work); err != nil {
 		return nil, err
 	}
 	return &work, nil
 }
 
-func GetByID(uid string, id int) (*models.Work, error) {
-	work, err := db.GetByID(uid, id)
+func (s *GetServiceImpl) GetByID(uid string, id int) (*models.Work, error) {
+	work, err := db.GetByID(s.DB, uid, id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrWorkNotFound
@@ -67,7 +150,7 @@ func GetByID(uid string, id int) (*models.Work, error) {
 	return work, nil
 }
 
-func PutByID(uid string, id int, request *put.WorksIDRequest) (*models.Work, error) {
+func (s *PutServiceImpl) PutByID(uid string, id int, request *put.WorksIDRequest) (*models.Work, error) {
 	var work = models.Work{
 		Title:       request.Title,
 		WorkURL:     request.WorkUrl,
@@ -77,7 +160,7 @@ func PutByID(uid string, id int, request *put.WorksIDRequest) (*models.Work, err
 		Description: request.Description,
 	}
 
-	if err := db.PutByID(uid, id, &work); err != nil {
+	if err := db.PutByID(s.DB, uid, id, &work); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrWorkNotFound
 		}
@@ -91,14 +174,14 @@ func PutByID(uid string, id int, request *put.WorksIDRequest) (*models.Work, err
 	return &work, nil
 }
 
-func PatchByID(uid string, id int, request *patch.WorksIDRequest) (*models.Work, error) {
+func (s *PatchServiceImpl) PatchByID(uid string, id int, request *patch.WorksIDRequest) (*models.Work, error) {
 	var work = models.Work{
 		RawIndex:    request.RawIndex,
 		StitchIndex: request.RawIndex,
 		IsCompleted: request.IsCompleted,
 	}
 
-	if err := db.PatchByID(uid, id, &work); err != nil {
+	if err := db.PatchByID(s.DB, uid, id, &work); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrWorkNotFound
 		}
@@ -112,14 +195,14 @@ func PatchByID(uid string, id int, request *patch.WorksIDRequest) (*models.Work,
 	return &work, nil
 }
 
-func DeleteByID(uid string, id int) error {
+func (s DeleteServiceImpl) DeleteByID(uid string, id int) error {
 	var work = models.Work{}
 
 	if work.Author != uid {
 		return ErrForbidden
 	}
 
-	result, err := db.DeleteByID(uid, id, &work)
+	result, err := db.DeleteByID(s.DB, uid, id, &work)
 	if err != nil {
 		return err
 	}
