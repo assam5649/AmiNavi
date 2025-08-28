@@ -1,16 +1,12 @@
 package db
 
 import (
+	"gorm.io/gorm"
 	"server/internal/models"
 )
 
-func FindByUID(uid string) (*models.User, bool, error) {
+func FindByUID(DB *gorm.DB, uid string) (*models.User, bool, error) {
 	var user models.User
-
-	DB, err := Connect()
-	if err != nil {
-		return nil, false, err
-	}
 
 	result := DB.Where("firebase_uid = ?", uid).Find(&user)
 	if result.Error != nil {
@@ -24,15 +20,10 @@ func FindByUID(uid string) (*models.User, bool, error) {
 	return nil, false, nil
 }
 
-func CreateUser(uid string) (*models.User, error) {
+func CreateUser(DB *gorm.DB, uid string) (*models.User, error) {
 	var user models.User
 	user.DisplayName = "Amip"
 	user.FirebaseUID = uid
-
-	DB, err := Connect()
-	if err != nil {
-		return nil, err
-	}
 
 	result := DB.Create(&user)
 	if result.Error != nil {
@@ -42,12 +33,7 @@ func CreateUser(uid string) (*models.User, error) {
 	return &user, nil
 }
 
-func Update(uid string, user *models.User) error {
-	DB, err := Connect()
-	if err != nil {
-		return err
-	}
-
+func Update(DB *gorm.DB, uid string, user *models.User) error {
 	result := DB.Model(user).Where("firebase_uid = ?", uid).Updates(models.User{DisplayName: user.DisplayName, ProfileImageURL: user.ProfileImageURL})
 	if result.Error != nil {
 		return result.Error
