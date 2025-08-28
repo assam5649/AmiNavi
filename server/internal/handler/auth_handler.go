@@ -1,9 +1,7 @@
 package handler
 
 import (
-	firebase "firebase.google.com/go/v4/auth"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"net/http"
 	"reflect"
 	"server/internal/auth"
@@ -14,12 +12,11 @@ import (
 )
 
 type AuthHandler struct {
-	DB           *gorm.DB
-	FirebaseAuth *firebase.Client
+	AuthService *services.AuthServices
 }
 
-func NewAuthHandler(db *gorm.DB, firebaseAuthClient *firebase.Client) *AuthHandler {
-	return &AuthHandler{DB: db, FirebaseAuth: firebaseAuthClient}
+func NewAuthHandler(authService *services.AuthServices) *AuthHandler {
+	return &AuthHandler{AuthService: authService}
 }
 
 func (h *AuthHandler) Register(c *gin.Context) {
@@ -37,7 +34,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 
-	user, exists, err := services.RegisterIfNotExists(uid)
+	user, exists, err := h.AuthService.Register.RegisterIfNotExists(uid)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "User register failed."})
 		return
@@ -79,7 +76,7 @@ func (h *AuthHandler) Update(c *gin.Context) {
 		return
 	}
 
-	user, err = services.Update(uid, &request)
+	user, err = h.AuthService.Update.Update(uid, &request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "User update failed."})
 		return
