@@ -21,13 +21,13 @@ services:
     volumes:
       - ./.env:/.env
       - ./aminavi-46dfc-firebase-adminsdk-fbsvc-54a4015174.json:/app/aminavi-46dfc-firebase-adminsdk-fbsvc-54a4015174.json
+      - ./aminavi-652103e6dc0c.json:/app/aminavi-652103e6dc0c.json
     depends_on:
       db:
         condition: service_healthy
 
   ml-service:
     container_name: python-ml
-    command: tail -f /dev/null
     build:
       context: ./ml
       dockerfile: Dockerfile
