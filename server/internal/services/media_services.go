@@ -2,15 +2,17 @@ package services
 
 import (
 	"bytes"
-	"cloud.google.com/go/storage"
 	"context"
-	firebase "firebase.google.com/go/v4/auth"
 	"fmt"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"io"
 	"log/slog"
+	"mime/multipart"
 	"net/http"
+
+	"cloud.google.com/go/storage"
+	firebase "firebase.google.com/go/v4/auth"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type CsvConversionService interface {
@@ -18,7 +20,7 @@ type CsvConversionService interface {
 }
 
 type UploadServices interface {
-	Upload(ctx context.Context, image []byte, fileId string) (string, error)
+	Upload(ctx context.Context, dataToUpload []byte, fileId string) (string, error)
 }
 
 type RequestServices interface {
@@ -45,7 +47,7 @@ func (s *CsvConversionServiceImpl) ConvertAndUpload(ctx context.Context,
 		return nil, "", err
 	}
 
-	gcsPath, err := uploadServices.Upload(ctx, image, fileId)
+	gcsPath, err := uploadServices.Upload(ctx, csv, fileId)
 	if err != nil {
 		return nil, "", err
 	}
@@ -93,19 +95,47 @@ func (s *UploadServiceImpl) Upload(ctx context.Context, csvData []byte, fileId s
 }
 
 func (s *RequestConvertServiceImpl) RequestConvert(image []byte) ([]byte, error) {
+	slog.Info("RequestConvert started.")
+
+	imageSize := len(image)
+	slog.Info(fmt.Sprintf("DEBUG: Go received image data size: %d bytes", imageSize))
+
+	if imageSize > 0 {
+		endIndex := 20
+		if imageSize < 20 {
+			endIndex = imageSize
+		}
+		slog.Info(fmt.Sprintf("DEBUG: First bytes: %v", image[:endIndex]))
+	} else {
+		slog.Warn("DEBUG: Go received zero-length image data.")
+	}
+
 	url := "http://ml-service:8501/convert"
 
-	resp, err := http.Post(url, "application/octet-stream", bytes.NewReader(image))
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	part, err := writer.CreateFormFile("file", "upload.png")
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		if resp != nil {
-			if err := resp.Body.Close(); err != nil {
-				return
-			}
-		}
-	}()
+	written, err := part.Write(image)
+	if err != nil {
+		return nil, err
+	}
+
+	slog.Info(fmt.Sprintf("DEBUG: Written bytes to multipart form: %d", written))
+
+	err = writer.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := http.Post(url, writer.FormDataContentType(), body)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("python server returned status %d", resp.StatusCode)
