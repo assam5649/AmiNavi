@@ -25,14 +25,14 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      ml-service:
+        condition: service_started
 
   ml-service:
     container_name: python-ml
     build:
       context: ./ml
       dockerfile: Dockerfile
-    volumes:
-    - ./ml:/app
     ports:
     - "8501:8501"
     networks:
