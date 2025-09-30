@@ -1,8 +1,9 @@
 package db
 
 import (
-	"gorm.io/gorm"
 	"server/internal/models"
+
+	"gorm.io/gorm"
 )
 
 func GetByUID(DB *gorm.DB, uid string) ([]models.Work, error) {
@@ -42,6 +43,10 @@ func GetByID(DB *gorm.DB, uid string, id int) (*models.Work, error) {
 	result := DB.Where("id = ? AND author = ?", id, uid).Find(&work)
 	if result.Error != nil {
 		return nil, result.Error
+	}
+
+	if work.ID == 0 && work.Author == "" {
+		return nil, nil
 	}
 
 	return &work, nil

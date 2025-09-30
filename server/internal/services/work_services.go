@@ -2,13 +2,14 @@ package services
 
 import (
 	"errors"
-	firebase "firebase.google.com/go/v4/auth"
-	"gorm.io/gorm"
 	"server/internal/db"
 	"server/internal/dto/patch"
 	"server/internal/dto/post"
 	"server/internal/dto/put"
 	"server/internal/models"
+
+	firebase "firebase.google.com/go/v4/auth"
+	"gorm.io/gorm"
 )
 
 type GetAllService interface {
@@ -145,6 +146,10 @@ func (s *GetServiceImpl) GetByID(uid string, id int) (*models.Work, error) {
 		}
 
 		return nil, err
+	}
+
+	if work == nil {
+		return nil, ErrWorkNotFound
 	}
 
 	return work, nil
