@@ -3,7 +3,6 @@ package handler
 import "C"
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"server/internal/auth"
 	"server/internal/dto/get"
@@ -13,6 +12,8 @@ import (
 	"server/internal/models"
 	"server/internal/services"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 type WorkHandler struct {
@@ -50,6 +51,7 @@ func (h *WorkHandler) GetAll(c *gin.Context) {
 
 			for _, w := range works {
 				response := get.WorkResponse{
+					ID:          w.ID,
 					Title:       w.Title,
 					IsCompleted: w.IsCompleted,
 					Description: w.Description,
@@ -73,6 +75,7 @@ func (h *WorkHandler) GetAll(c *gin.Context) {
 
 	for _, w := range works {
 		response := get.WorkResponse{
+			ID:          w.ID,
 			Title:       w.Title,
 			IsCompleted: w.IsCompleted,
 			Description: w.Description,
@@ -156,6 +159,7 @@ func (h *WorkHandler) GetByID(c *gin.Context) {
 		return
 	}
 
+	response.ID = work.ID
 	response.Title = work.Title
 	response.WorkUrl = work.WorkURL
 	response.RawIndex = work.RawIndex

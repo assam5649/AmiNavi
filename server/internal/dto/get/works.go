@@ -3,6 +3,7 @@ package get
 import "time"
 
 type WorkResponse struct {
+	ID          int        `json:"id"`
 	Title       string     `json:"title"`
 	IsCompleted bool       `json:"is_completed"`
 	Description string     `json:"description"`

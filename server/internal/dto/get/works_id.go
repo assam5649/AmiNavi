@@ -3,6 +3,7 @@ package get
 import "time"
 
 type WorksIDResponse struct {
+	ID          int        `json:"id"`
 	Title       string     `json:"title"`
 	WorkUrl     string     `json:"work_url"`
 	RawIndex    int        `json:"raw_index"`
