@@ -223,7 +223,7 @@ func (s *PutServiceImpl) PutByID(uid string, id int, request *put.WorksIDRequest
 func (s *PatchServiceImpl) PatchByID(uid string, id int, request *patch.WorksIDRequest) (*models.Work, error) {
 	var work = models.Work{
 		RawIndex:    request.RawIndex,
-		StitchIndex: request.RawIndex,
+		StitchIndex: request.StitchIndex,
 		IsCompleted: request.IsCompleted,
 	}
 

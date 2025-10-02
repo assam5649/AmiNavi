@@ -1,8 +1,8 @@
 package db
 
 import (
+	"errors"
 	"server/internal/models"
-	"strconv"
 
 	"gorm.io/gorm"
 )
@@ -95,18 +95,15 @@ func PatchByID(DB *gorm.DB, uid string, id int, work *models.Work) error {
 }
 
 func DeleteByID(DB *gorm.DB, uid string, id int, work *models.Work) (*gorm.DB, error) {
-	result := DB.Where("author = ?", uid).Find(&work)
+	result := DB.Where("id = ? AND author = ?", id, uid).First(&work)
 	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, gorm.ErrRecordNotFound
+		}
 		return nil, result.Error
 	}
 
-	saved_uid := strconv.Itoa(work.ID)
-
-	if saved_uid != uid {
-		return result, nil
-	}
-
-	result = DB.Where("id = ? AND author = ?", id, uid).Delete(work)
+	result = DB.Delete(&work)
 	if result.Error != nil {
 		return nil, result.Error
 	}

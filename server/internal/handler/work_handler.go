@@ -104,6 +104,12 @@ func (h *WorkHandler) Create(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body."})
+		return
+	}
+
+	if request.FileName == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body. (FileName is empty)"})
+		return
 	}
 
 	work, err := h.WorkService.CreateWork.CreateWork(uid, &request)
