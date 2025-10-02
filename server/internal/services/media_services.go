@@ -47,13 +47,13 @@ func (s *CsvConversionServiceImpl) ConvertAndUpload(ctx context.Context,
 		return nil, "", err
 	}
 
-	gcsPath, err := uploadServices.Upload(ctx, csv, fileId)
+	fileName, err := uploadServices.Upload(ctx, csv, fileId)
 	if err != nil {
 		return nil, "", err
 	}
 
 	slog.Info("ConvertAndUpload Completed.")
-	return csv, gcsPath, err
+	return csv, fileName, err
 }
 
 type MediaServices struct {
@@ -88,10 +88,8 @@ func (s *UploadServiceImpl) Upload(ctx context.Context, csvData []byte, fileId s
 		slog.Error("Failed to Close wc", "error", err, "bucket", bucketName, "object", gcsFileName)
 	}
 
-	gcsPath := "gs://" + bucketName + "/" + gcsFileName
-
 	slog.Info("Upload Completed.")
-	return gcsPath, nil
+	return gcsFileName, nil
 }
 
 func (s *RequestConvertServiceImpl) RequestConvert(image []byte) ([]byte, error) {

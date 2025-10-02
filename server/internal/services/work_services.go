@@ -1,13 +1,19 @@
 package services
 
 import (
+	"encoding/json"
 	"errors"
+	"log/slog"
+	"os"
 	"server/internal/db"
 	"server/internal/dto/patch"
 	"server/internal/dto/post"
 	"server/internal/dto/put"
 	"server/internal/models"
+	"strings"
+	"time"
 
+	"cloud.google.com/go/storage"
 	firebase "firebase.google.com/go/v4/auth"
 	"gorm.io/gorm"
 )
@@ -25,7 +31,7 @@ type CreateWorkService interface {
 }
 
 type GetService interface {
-	GetByID(uid string, id int) (*models.Work, error)
+	GetByID(uid string, id int) (*models.Work, string, error)
 }
 
 type PutService interface {
@@ -50,7 +56,8 @@ type CreateWorkServiceImpl struct {
 	DB *gorm.DB
 }
 type GetServiceImpl struct {
-	DB *gorm.DB
+	DB      *gorm.DB
+	Storage *storage.Client
 }
 type PutServiceImpl struct {
 	DB *gorm.DB
@@ -65,6 +72,7 @@ type DeleteServiceImpl struct {
 type WorkServices struct {
 	DB           *gorm.DB
 	FirebaseAuth *firebase.Client
+	Storage      *storage.Client
 	GetAll       GetAllService
 	GetCompleted GetCompletedService
 	CreateWork   CreateWorkService
@@ -99,6 +107,11 @@ var (
 	ErrForbidden    = errors.New("unauthorized access to work")
 )
 
+type ServiceAccount struct {
+	ClientEmail string `json:"client_email"`
+	PrivateKey  string `json:"private_key"`
+}
+
 func (s *GetAllServiceImpl) GetAllByUID(uid string) ([]models.Work, error) {
 	workModel, err := db.GetByUID(s.DB, uid)
 	if err != nil {
@@ -121,7 +134,7 @@ func (s *CreateWorkServiceImpl) CreateWork(uid string, request *post.WorksReques
 	var work = models.Work{
 		Author:      uid,
 		Title:       request.Title,
-		WorkURL:     request.WorkUrl,
+		FileName:    request.FileName,
 		Description: request.Description,
 		RawIndex:    0,
 		StitchIndex: 0,
@@ -135,30 +148,58 @@ func (s *CreateWorkServiceImpl) CreateWork(uid string, request *post.WorksReques
 	return &work, nil
 }
 
-func (s *GetServiceImpl) GetByID(uid string, id int) (*models.Work, error) {
+func (s *GetServiceImpl) GetByID(uid string, id int) (*models.Work, string, error) {
 	work, err := db.GetByID(s.DB, uid, id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, ErrWorkNotFound
+			return nil, "", ErrWorkNotFound
 		}
 		if work.Author != uid {
-			return nil, ErrForbidden
+			return nil, "", ErrForbidden
 		}
 
-		return nil, err
+		return nil, "", err
 	}
 
 	if work == nil {
-		return nil, ErrWorkNotFound
+		return nil, "", ErrWorkNotFound
 	}
 
-	return work, nil
+	bucketName := "aminavi"
+	gcsFileName := "csv/" + work.FileName
+
+	data, err := os.ReadFile("/app/august-button-470219-d5-5cc12900c9b1.json")
+	if err != nil {
+		return nil, "", err
+	}
+
+	var sa ServiceAccount
+	if err := json.Unmarshal(data, &sa); err != nil {
+		return nil, "", err
+	}
+
+	privateKey := []byte(strings.ReplaceAll(sa.PrivateKey, `\n`, "\n"))
+
+	opts := &storage.SignedURLOptions{
+		GoogleAccessID: sa.ClientEmail,
+		PrivateKey:     privateKey,
+		Method:         "GET",
+		Expires:        time.Now().Add(15 * time.Minute),
+		Scheme:         storage.SigningSchemeV4,
+	}
+
+	signedURL, err := storage.SignedURL(bucketName, gcsFileName, opts)
+	if err != nil {
+		return nil, "", err
+	}
+	slog.Info("Completed GCS URL generate")
+
+	return work, signedURL, nil
 }
 
 func (s *PutServiceImpl) PutByID(uid string, id int, request *put.WorksIDRequest) (*models.Work, error) {
 	var work = models.Work{
 		Title:       request.Title,
-		WorkURL:     request.WorkUrl,
 		RawIndex:    request.RawIndex,
 		StitchIndex: request.StitchIndex,
 		IsCompleted: request.IsCompleted,
@@ -203,13 +244,13 @@ func (s *PatchServiceImpl) PatchByID(uid string, id int, request *patch.WorksIDR
 func (s DeleteServiceImpl) DeleteByID(uid string, id int) error {
 	var work = models.Work{}
 
-	if work.Author != uid {
-		return ErrForbidden
-	}
-
 	result, err := db.DeleteByID(s.DB, uid, id, &work)
 	if err != nil {
 		return err
+	}
+
+	if work.Author != uid {
+		return ErrForbidden
 	}
 
 	if result.RowsAffected == 0 {

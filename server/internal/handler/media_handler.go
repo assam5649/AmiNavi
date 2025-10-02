@@ -41,7 +41,7 @@ func (h *MediaHandler) HandlerConversion(c *gin.Context) {
 		return
 	}
 
-	csv, gcsPath, err := h.MediaService.CsvService.ConvertAndUpload(
+	csv, fileName, err := h.MediaService.CsvService.ConvertAndUpload(
 		c.Request.Context(),
 		imageBytes,
 		h.MediaService.Request,
@@ -64,7 +64,7 @@ func (h *MediaHandler) HandlerConversion(c *gin.Context) {
 	// }
 
 	response.Csv = csv
-	response.CsvUrl = gcsPath
+	response.FileName = fileName
 
 	c.JSON(http.StatusOK, response)
 

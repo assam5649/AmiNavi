@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS works (
         COLLATE utf8mb4_0900_ai_ci
         NOT NULL,
     title VARCHAR(256),
-    work_url VARCHAR(256),
+    file_name VARCHAR(256),
     raw_index INT,
     stitch_index INT,
     bookmark BOOLEAN,

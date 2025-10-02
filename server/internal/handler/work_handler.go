@@ -114,7 +114,7 @@ func (h *WorkHandler) Create(c *gin.Context) {
 
 	response.ID = work.ID
 	response.Title = work.Title
-	response.WorkUrl = work.WorkURL
+	response.FileName = work.FileName
 	response.RawIndex = work.RawIndex
 	response.StitchIndex = work.StitchIndex
 	response.IsCompleted = work.IsCompleted
@@ -145,7 +145,7 @@ func (h *WorkHandler) GetByID(c *gin.Context) {
 		return
 	}
 
-	work, err = h.WorkService.Get.GetByID(uid, id)
+	work, signedURL, err := h.WorkService.Get.GetByID(uid, id)
 	if err != nil {
 		if errors.Is(err, services.ErrWorkNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Work not found."})
@@ -155,13 +155,14 @@ func (h *WorkHandler) GetByID(c *gin.Context) {
 			c.JSON(http.StatusForbidden, gin.H{"error": "Not authorized to access this work."})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get work by id."})
+
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
 	response.ID = work.ID
 	response.Title = work.Title
-	response.WorkUrl = work.WorkURL
+	response.WorkUrl = signedURL
 	response.RawIndex = work.RawIndex
 	response.StitchIndex = work.RawIndex
 	response.IsCompleted = work.IsCompleted
@@ -212,7 +213,6 @@ func (h *WorkHandler) PutByID(c *gin.Context) {
 
 	response.ID = work.ID
 	response.Title = work.Title
-	response.WorkUrl = work.WorkURL
 	response.RawIndex = work.RawIndex
 	response.StitchIndex = work.StitchIndex
 	response.IsCompleted = work.IsCompleted
@@ -265,7 +265,6 @@ func (h *WorkHandler) PatchByID(c *gin.Context) {
 
 	response.ID = work.ID
 	response.Title = work.Title
-	response.WorkUrl = work.WorkURL
 	response.RawIndex = work.RawIndex
 	response.StitchIndex = work.StitchIndex
 	response.IsCompleted = work.IsCompleted
@@ -306,7 +305,7 @@ func (h *WorkHandler) DeleteByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusNoContent, nil)
+	c.JSON(http.StatusAccepted, nil)
 
 	return
 }

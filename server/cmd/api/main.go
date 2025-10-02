@@ -1,9 +1,7 @@
 package main
 
 import (
-	"cloud.google.com/go/storage"
 	"context"
-	"google.golang.org/api/option"
 	"log"
 	"net/http"
 	"os"
@@ -15,6 +13,9 @@ import (
 	"server/internal/services"
 	"syscall"
 	"time"
+
+	"cloud.google.com/go/storage"
+	"google.golang.org/api/option"
 )
 
 func main() {
@@ -51,7 +52,7 @@ func main() {
 	getAll := &services.GetAllServiceImpl{DB: DB}
 	getCompleted := &services.GetCompletedServiceImpl{DB: DB}
 	createWork := &services.CreateWorkServiceImpl{DB: DB}
-	get := &services.GetServiceImpl{DB: DB}
+	get := &services.GetServiceImpl{DB: DB, Storage: gcsClient}
 	put := &services.PutServiceImpl{DB: DB}
 	patch := &services.PatchServiceImpl{DB: DB}
 	deleteWork := &services.DeleteServiceImpl{DB: DB}
@@ -59,6 +60,7 @@ func main() {
 	workService := &services.WorkServices{
 		DB:           DB,
 		FirebaseAuth: firebaseAuthClient,
+		Storage:      gcsClient,
 		GetAll:       getAll,
 		GetCompleted: getCompleted,
 		CreateWork:   createWork,

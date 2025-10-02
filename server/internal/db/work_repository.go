@@ -2,6 +2,7 @@ package db
 
 import (
 	"server/internal/models"
+	"strconv"
 
 	"gorm.io/gorm"
 )
@@ -52,6 +53,19 @@ func GetByID(DB *gorm.DB, uid string, id int) (*models.Work, error) {
 	return &work, nil
 }
 
+func SaveFileName(DB *gorm.DB, work *models.Work, id int, uid int, fileName string) error {
+	updates := map[string]interface{}{
+		"file_name": fileName,
+	}
+
+	result := DB.Model(&work).Where("id = ? AND author = ?", id, uid).Updates(updates)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
 func PutByID(DB *gorm.DB, uid string, id int, work *models.Work) error {
 	result := DB.Model(work).Where("id = ? AND author = ?", id, uid).Updates(work)
 	if result.Error != nil {
@@ -81,7 +95,18 @@ func PatchByID(DB *gorm.DB, uid string, id int, work *models.Work) error {
 }
 
 func DeleteByID(DB *gorm.DB, uid string, id int, work *models.Work) (*gorm.DB, error) {
-	result := DB.Where("id = ? AND author = ?", id, uid).Delete(work)
+	result := DB.Where("author = ?", uid).Find(&work)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	saved_uid := strconv.Itoa(work.ID)
+
+	if saved_uid != uid {
+		return result, nil
+	}
+
+	result = DB.Where("id = ? AND author = ?", id, uid).Delete(work)
 	if result.Error != nil {
 		return nil, result.Error
 	}

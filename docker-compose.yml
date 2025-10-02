@@ -22,6 +22,7 @@ services:
       - ./.env:/.env
       - ./aminavi-46dfc-firebase-adminsdk-fbsvc-54a4015174.json:/app/aminavi-46dfc-firebase-adminsdk-fbsvc-54a4015174.json
       - ./aminavi-652103e6dc0c.json:/app/aminavi-652103e6dc0c.json
+      - ./august-button-470219-d5-5cc12900c9b1.json:/app/august-button-470219-d5-5cc12900c9b1.json
     depends_on:
       db:
         condition: service_healthy

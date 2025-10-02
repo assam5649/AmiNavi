@@ -6,7 +6,7 @@ type Work struct {
 	ID          int        `json:"id"`
 	Author      string     `json:"author"`
 	Title       string     `json:"title"`
-	WorkURL     string     `json:"work_url"`
+	FileName    string     `json:"file_name"`
 	RawIndex    int        `json:"raw_index"`
 	StitchIndex int        `json:"stitch_index"`
 	Bookmark    bool       `json:"bookmark"`

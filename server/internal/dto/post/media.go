@@ -5,6 +5,6 @@ type MediaRequest struct {
 }
 
 type MediaResponse struct {
-	Csv    []byte `json:"csv"`
-	CsvUrl string `json:"csv_url"`
+	Csv      []byte `json:"csv"`
+	FileName string `json:"file_name"`
 }
