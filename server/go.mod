@@ -8,7 +8,6 @@ require (
 	cloud.google.com/go/storage v1.53.0
 	firebase.google.com/go/v4 v4.16.1
 	github.com/gin-gonic/gin v1.10.1
-	github.com/google/uuid v1.6.0
 	google.golang.org/api v0.238.0
 	gorm.io/driver/mysql v1.6.0
 	gorm.io/gorm v1.30.0
@@ -51,6 +50,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.6 // indirect
 	github.com/googleapis/gax-go/v2 v2.14.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect

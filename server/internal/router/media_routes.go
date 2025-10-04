@@ -1,13 +1,15 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"server/internal/handler"
 	"server/internal/services"
+
+	"github.com/gin-gonic/gin"
 )
 
 func MediaRouter(router *gin.RouterGroup, service *services.MediaServices) {
 	mediaHandler := handler.NewMediaHandler(service)
 
 	router.POST("/csv-conversions", mediaHandler.HandlerConversion)
+	router.POST("/ocr", mediaHandler.HandlerOCR)
 }

@@ -27,13 +27,44 @@ type RequestServices interface {
 	RequestConvert(image []byte) ([]byte, error)
 }
 
-type CsvConversionServiceImpl struct{}
+type RequestOCRServices interface {
+	RequestOCR(image []byte) ([]byte, error)
+}
+
+type OCRServices interface {
+	OCR(ctx context.Context, image []byte) ([]byte, error)
+}
+
+type CsvConversionServiceImpl struct {
+	RequestService RequestServices
+	UploadService  UploadServices
+}
 type UploadServiceImpl struct {
 	DB      *gorm.DB
 	Storage *storage.Client
 }
 type RequestConvertServiceImpl struct {
 	DB *gorm.DB
+}
+type RequestOCRServiceImpl struct {
+	DB *gorm.DB
+}
+type OCRServiceImpl struct {
+	RequestService RequestOCRServices
+	UploadService  UploadServices
+}
+
+func (s *OCRServiceImpl) OCR(ctx context.Context,
+	image []byte,
+) ([]byte, error) {
+	csv, err := s.RequestService.RequestOCR(image)
+	if err != nil {
+		return nil, err
+	}
+
+	slog.Info("OCR completed.")
+	slog.Info("Response Data", "pattern", csv)
+	return csv, err
 }
 
 func (s *CsvConversionServiceImpl) ConvertAndUpload(ctx context.Context,
@@ -47,13 +78,13 @@ func (s *CsvConversionServiceImpl) ConvertAndUpload(ctx context.Context,
 		return nil, "", err
 	}
 
-	fileName, err := uploadServices.Upload(ctx, csv, fileId)
+	filename, err := uploadServices.Upload(ctx, csv, fileId)
 	if err != nil {
 		return nil, "", err
 	}
 
-	slog.Info("ConvertAndUpload Completed.")
-	return csv, fileName, err
+	slog.Info("convertandupload completed.")
+	return csv, filename, err
 }
 
 type MediaServices struct {
@@ -63,10 +94,12 @@ type MediaServices struct {
 	CsvService   CsvConversionService
 	Upload       UploadServices
 	Request      RequestServices
+	OCR          OCRServices
+	RequestOCR   RequestOCRServices
 }
 
-func NewMediaService(db *gorm.DB, firebaseAuthClient *firebase.Client, storage *storage.Client, csvService CsvConversionService, upload UploadServices, request RequestServices) *MediaServices {
-	return &MediaServices{DB: db, FirebaseAuth: firebaseAuthClient, Storage: storage, CsvService: csvService, Upload: upload, Request: request}
+func NewMediaService(db *gorm.DB, firebaseAuthClient *firebase.Client, storage *storage.Client, csvService CsvConversionService, upload UploadServices, request RequestServices, OCR OCRServices, requestOCR RequestOCRServices) *MediaServices {
+	return &MediaServices{DB: db, FirebaseAuth: firebaseAuthClient, Storage: storage, CsvService: csvService, Upload: upload, Request: request, OCR: OCR, RequestOCR: requestOCR}
 }
 
 func (s *UploadServiceImpl) Upload(ctx context.Context, csvData []byte, fileId string) (string, error) {
@@ -90,6 +123,62 @@ func (s *UploadServiceImpl) Upload(ctx context.Context, csvData []byte, fileId s
 
 	slog.Info("Upload Completed.")
 	return gcsFileName, nil
+}
+
+func (s *RequestOCRServiceImpl) RequestOCR(image []byte) ([]byte, error) {
+	slog.Info("RequestOCR started.")
+
+	imageSize := len(image)
+	slog.Info(fmt.Sprintf("DEBUG: Go received image data size: %d bytes", imageSize))
+
+	if imageSize > 0 {
+		endIndex := 20
+		if imageSize < 20 {
+			endIndex = imageSize
+		}
+		slog.Info(fmt.Sprintf("DEBUG: First bytes: %v", image[:endIndex]))
+	} else {
+		slog.Warn("DEBUG: Go received zero-length image data.")
+	}
+
+	url := "http://ml-service:8501/ocr"
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	part, err := writer.CreateFormFile("file", "upload.png")
+	if err != nil {
+		return nil, err
+	}
+	written, err := part.Write(image)
+	if err != nil {
+		return nil, err
+	}
+
+	slog.Info(fmt.Sprintf("DEBUG: Written bytes to multipart form: %d", written))
+
+	err = writer.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := http.Post(url, writer.FormDataContentType(), body)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("python server returned status %d", resp.StatusCode)
+	}
+
+	csvData, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	slog.Info("RequestOCR Completed.")
+	return csvData, nil
 }
 
 func (s *RequestConvertServiceImpl) RequestConvert(image []byte) ([]byte, error) {

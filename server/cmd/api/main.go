@@ -70,9 +70,16 @@ func main() {
 		Delete:       deleteWork,
 	}
 
-	csvService := &services.CsvConversionServiceImpl{}
 	upload := &services.UploadServiceImpl{DB: DB, Storage: gcsClient}
 	request := &services.RequestConvertServiceImpl{DB: DB}
+	requestOCR := &services.RequestOCRServiceImpl{DB: DB}
+	csvService := &services.CsvConversionServiceImpl{
+		RequestService: request,
+		UploadService:  upload,
+	}
+	ocrService := &services.OCRServiceImpl{
+		RequestService: requestOCR,
+	}
 
 	mediaService := &services.MediaServices{
 		DB:           DB,
@@ -81,6 +88,8 @@ func main() {
 		CsvService:   csvService,
 		Upload:       upload,
 		Request:      request,
+		OCR:          ocrService,
+		RequestOCR:   requestOCR,
 	}
 
 	r := router.NewRouter(authService, workService, mediaService)

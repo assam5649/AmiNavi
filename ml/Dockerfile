@@ -7,6 +7,8 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     libgl1 \
     libglib2.0-0 \  
+    tesseract-ocr \
+    libtesseract-dev \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
@@ -15,6 +17,7 @@ RUN pip install --timeout 300 -r requirements.txt
 
 COPY app.py .
 COPY model /app/model
+COPY OCR /app/OCR
 
 CMD ["gunicorn", "--bind", "0.0.0.0:8501", "--workers", "1", "app:app", \
      "--log-level", "info", \
