@@ -7,9 +7,16 @@ import pandas as pd
 import json
 import logging
 from tensorflow import keras
+from google.cloud import storage
 
 try:
-    MODEL_PATH = "/app/model/knit3.keras"
+    MODEL_NAME = "knit_v1.0.keras"
+    MODEL_PATH = "/app/ml/model/knit.keras"
+
+    client = storage.Client()
+    bucket = client.bucket("models")
+    blob = bucket.blob(MODEL_NAME)
+    blob.download_to_filename(MODEL_PATH)
 
 
     load_model = keras.models.load_model(MODEL_PATH)
