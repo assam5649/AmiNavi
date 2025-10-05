@@ -54,6 +54,11 @@ spec:
               port: 3306
             initialDelaySeconds: 30
             periodSeconds: 20
+          resources:
+            limits:
+              memory: "512Mi"
+            requests:
+              memory: "256Mi"
 
         - name: python-ml
           image: assam5649/python-ml:latest
@@ -70,6 +75,11 @@ spec:
             - name: gcs-json-volume
               mountPath: /app/gcs.json
               subPath: gcs.json
+          resources:
+            limits:
+              memory: "1Gi" 
+            requests:
+              memory: "512Mi"
 
         - name: go-backend
           image: assam5649/go-backend:latest
