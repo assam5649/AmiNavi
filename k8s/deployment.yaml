@@ -73,4 +73,12 @@ spec:
           volumeMounts:
             - name: mysql-data
               mountPath: /var/lib/mysql
-
+      volumes:
+        - name: firebase-json-volume
+          secret:
+            secretName: firebase-json
+        - name: gcs-json-volume
+          secret:
+            secretName: gcs-secrets
+        - name: mysql-data
+          emptyDir: {}
