@@ -8,10 +8,7 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
-    env:
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-      DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    environment: AmiNavi
 
     steps:
       - name: Checkout code
@@ -29,10 +26,10 @@ jobs:
 
       - name: Build & Push Go Backend
         run: |
-          docker build -t $DOCKERHUB_USERNAME/go-backend:${COMMIT_SHA} ./server
-          docker push $DOCKERHUB_USERNAME/go-backend:${COMMIT_SHA}
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/go-backend:${COMMIT_SHA} ./server
+          docker push ${{ secrets.DOCKER_USERNAME }}/go-backend:${COMMIT_SHA}
 
       - name: Build & Push Python ML
         run: |
-          docker build -t $DOCKERHUB_USERNAME/python-ml:${COMMIT_SHA} ./ml
-          docker push $DOCKERHUB_USERNAME/python-ml:${COMMIT_SHA}
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/python-ml:${COMMIT_SHA} ./ml
+          docker push ${{ secrets.DOCKER_USERNAME }}/python-ml:${COMMIT_SHA}
