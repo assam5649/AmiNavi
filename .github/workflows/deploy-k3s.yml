@@ -1,0 +1,53 @@
+name: Deploy to k3s
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: AmiNavi
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+
+      - name: Create Kubernetes Secrets
+        run: |
+          kubectl create secret generic app-env \
+            --from-literal=DB_HOST=${{ secrets.DB_HOST }} \
+            --from-literal=DB_USER=${{ secrets.DB_USER }} \
+            --from-literal=DB_PASS=${{ secrets.DB_PASS }} \
+            --from-literal=DB_PORT=${{ secrets.DB_PORT }} \
+            --from-literal=MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }} \
+            --from-literal=MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
+            --from-literal=MYSQL_URL=${{ secrets.MYSQL_URL }} \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY }}" > firebase.json
+          kubectl create secret generic firebase-json \
+            --from-file=firebase.json=firebase.json \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          echo "${{ secrets.GCS_SERVICE_ACCOUNT_OWNER_PRIVATE_KEY }}" > gcs-owner.json
+          echo "${{ secrets.GCS_SERVICE_ACCOUNT_PRIVATE_KEY }}" > gcs.json
+          kubectl create secret generic gcs-secrets \
+            --from-file=gcs-owner.json=gcs-owner.json \
+            --from-file=gcs.json=gcs.json \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy to k3s
+        run: |
+          IMAGE_TAG=${GITHUB_SHA}
+
+          sed "s|<commit_SHA>|$IMAGE_TAG|g" k8s/deployment.yaml | kubectl apply -f -
+          kubectl apply -f k8s/service.yaml
+
+      - name: Check Pods
+        run: kubectl get pods -o wide
