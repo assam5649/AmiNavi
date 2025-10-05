@@ -19,6 +19,31 @@ func NewMediaHandler(mediaService *services.MediaServices) *MediaHandler {
 	return &MediaHandler{MediaService: mediaService}
 }
 
+func (h *MediaHandler) HandlerFixCSV(c *gin.Context) {
+	data, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to read request body."})
+		return
+	}
+
+	csvData, fileName, err := h.MediaService.FixCsv.FixCsv(
+		c.Request.Context(),
+		data, // []byte で渡す
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fix csv."})
+		return
+	}
+
+	response := post.FixResponse{
+		Csv:      csvData,
+		FileName: fileName,
+	}
+
+	c.JSON(http.StatusAccepted, response)
+	return
+}
+
 func (h *MediaHandler) HandlerOCR(c *gin.Context) {
 	var response post.OCRResponse
 

@@ -80,6 +80,7 @@ func main() {
 	ocrService := &services.OCRServiceImpl{
 		RequestService: requestOCR,
 	}
+	fixCsv := &services.FixCsvServiceImpl{DB: DB, Storage: gcsClient}
 
 	mediaService := &services.MediaServices{
 		DB:           DB,
@@ -90,6 +91,7 @@ func main() {
 		Request:      request,
 		OCR:          ocrService,
 		RequestOCR:   requestOCR,
+		FixCsv:       fixCsv,
 	}
 
 	r := router.NewRouter(authService, workService, mediaService)

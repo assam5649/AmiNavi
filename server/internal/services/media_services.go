@@ -35,6 +35,10 @@ type OCRServices interface {
 	OCR(ctx context.Context, image []byte) ([]byte, error)
 }
 
+type FixCsvService interface {
+	FixCsv(ctx context.Context, csv []byte) ([]byte, string, error)
+}
+
 type CsvConversionServiceImpl struct {
 	RequestService RequestServices
 	UploadService  UploadServices
@@ -52,6 +56,37 @@ type RequestOCRServiceImpl struct {
 type OCRServiceImpl struct {
 	RequestService RequestOCRServices
 	UploadService  UploadServices
+}
+type FixCsvServiceImpl struct {
+	DB      *gorm.DB
+	Storage *storage.Client
+}
+
+func (s *FixCsvServiceImpl) FixCsv(ctx context.Context,
+	csv []byte,
+) ([]byte, string, error) {
+	slog.Info("FixCsv Started.")
+	fileId := uuid.NewString()
+	bucketName := "aminavi"
+	gcsFileName := "csv/" + fileId
+
+	bucket := s.Storage.Bucket(bucketName)
+
+	obj := bucket.Object(gcsFileName)
+
+	wc := obj.NewWriter(ctx)
+	reader := bytes.NewReader(csv)
+
+	if _, err := io.Copy(wc, reader); err != nil {
+		slog.Error("Failed to IO Copy", "error", err, "bucket", bucketName, "object", gcsFileName)
+	}
+
+	if err := wc.Close(); err != nil {
+		slog.Error("Failed to Close wc", "error", err, "bucket", bucketName, "object", gcsFileName)
+	}
+
+	slog.Info("Fix Csv Upload Completed.")
+	return csv, fileId, nil
 }
 
 func (s *OCRServiceImpl) OCR(ctx context.Context,
@@ -96,10 +131,11 @@ type MediaServices struct {
 	Request      RequestServices
 	OCR          OCRServices
 	RequestOCR   RequestOCRServices
+	FixCsv       FixCsvService
 }
 
-func NewMediaService(db *gorm.DB, firebaseAuthClient *firebase.Client, storage *storage.Client, csvService CsvConversionService, upload UploadServices, request RequestServices, OCR OCRServices, requestOCR RequestOCRServices) *MediaServices {
-	return &MediaServices{DB: db, FirebaseAuth: firebaseAuthClient, Storage: storage, CsvService: csvService, Upload: upload, Request: request, OCR: OCR, RequestOCR: requestOCR}
+func NewMediaService(db *gorm.DB, firebaseAuthClient *firebase.Client, storage *storage.Client, csvService CsvConversionService, upload UploadServices, request RequestServices, OCR OCRServices, requestOCR RequestOCRServices, fixCsv FixCsvService) *MediaServices {
+	return &MediaServices{DB: db, FirebaseAuth: firebaseAuthClient, Storage: storage, CsvService: csvService, Upload: upload, Request: request, OCR: OCR, RequestOCR: requestOCR, FixCsv: fixCsv}
 }
 
 func (s *UploadServiceImpl) Upload(ctx context.Context, csvData []byte, fileId string) (string, error) {

@@ -11,5 +11,6 @@ func MediaRouter(router *gin.RouterGroup, service *services.MediaServices) {
 	mediaHandler := handler.NewMediaHandler(service)
 
 	router.POST("/csv-conversions", mediaHandler.HandlerConversion)
+	router.POST("/fix-csv", mediaHandler.HandlerFixCSV)
 	router.POST("/ocr", mediaHandler.HandlerOCR)
 }
