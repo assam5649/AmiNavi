@@ -30,13 +30,13 @@ jobs:
             --from-literal=MYSQL_URL=${{ secrets.MYSQL_URL }} \
             --dry-run=client -o yaml | kubectl apply -f -
 
-          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY }}" > firebase.json
+          echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY }}" | sed 's/\\n/\n/g' > firebase.json
           kubectl create secret generic firebase-json \
             --from-file=firebase.json=firebase.json \
             --dry-run=client -o yaml | kubectl apply -f -
 
-          echo "${{ secrets.GCS_SERVICE_ACCOUNT_OWNER_PRIVATE_KEY }}" > gcs-owner.json
-          echo "${{ secrets.GCS_SERVICE_ACCOUNT_PRIVATE_KEY }}" > gcs.json
+          echo "${{ secrets.GCS_SERVICE_ACCOUNT_OWNER_PRIVATE_KEY }}" | sed 's/\\n/\n/g' > gcs-owner.json
+          echo "${{ secrets.GCS_SERVICE_ACCOUNT_PRIVATE_KEY }}" | sed 's/\\n/\n/g' > gcs.json
           kubectl create secret generic gcs-secrets \
             --from-file=gcs-owner.json=gcs-owner.json \
             --from-file=gcs.json=gcs.json \
@@ -45,7 +45,6 @@ jobs:
       - name: Deploy to k3s
         run: |
           IMAGE_TAG=${GITHUB_SHA}
-
           sed "s|<commit_SHA>|$IMAGE_TAG|g" k8s/deployment.yaml | kubectl apply -f -
           kubectl apply -f k8s/service.yaml
 
