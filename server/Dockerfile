@@ -18,4 +18,7 @@ RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.0/
 
 RUN go build -o server ./cmd/api
 
+COPY scripts/entry.sh /app/scripts/entry.sh
+RUN chmod +x /app/scripts/entry.sh
+
 CMD ["./scripts/entry.sh"]
