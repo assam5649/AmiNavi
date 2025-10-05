@@ -26,10 +26,14 @@ jobs:
 
       - name: Build & Push Go Backend
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/go-backend:${COMMIT_SHA} ./server
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/go-backend:${COMMIT_SHA} \
+                       -t ${{ secrets.DOCKER_USERNAME }}/go-backend:latest ./server
           docker push ${{ secrets.DOCKER_USERNAME }}/go-backend:${COMMIT_SHA}
+          docker push ${{ secrets.DOCKER_USERNAME }}/go-backend:latest
 
       - name: Build & Push Python ML
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/python-ml:${COMMIT_SHA} ./ml
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/python-ml:${COMMIT_SHA} \
+                       -t ${{ secrets.DOCKER_USERNAME }}/python-ml:latest ./ml
           docker push ${{ secrets.DOCKER_USERNAME }}/python-ml:${COMMIT_SHA}
+          docker push ${{ secrets.DOCKER_USERNAME }}/python-ml:latest
