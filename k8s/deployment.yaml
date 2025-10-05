@@ -37,24 +37,36 @@ spec:
           image: assam5649/python-ml:latest
           ports:
             - containerPort: 8501
-
-        - name: mysql
-          image: mysql:latest
           envFrom:
             - secretRef:
                 name: app-env
+
+        - name: mysql
+          image: mysql:latest
           ports:
             - containerPort: 3306
+          env:
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: app-env
+                  key: DB_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-env
+                  key: DB_PASS
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: app-env
+                  key: MYSQL_DATABASE
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-env
+                  key: MYSQL_ROOT_PASSWORD
           volumeMounts:
             - name: mysql-data
               mountPath: /var/lib/mysql
 
-      volumes:
-        - name: firebase-json-volume
-          secret:
-            secretName: firebase-json
-        - name: gcs-json-volume
-          secret:
-            secretName: gcs-secrets
-        - name: mysql-data
-          emptyDir: {}
