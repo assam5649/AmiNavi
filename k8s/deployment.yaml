@@ -15,36 +15,6 @@ spec:
         app: aminavi
     spec:
       containers:
-        - name: go-backend
-          image: assam5649/go-backend:latest
-          ports:
-            - containerPort: 8080
-          envFrom:
-            - secretRef:
-                name: app-env
-          volumeMounts:
-            - name: firebase-json-volume
-              mountPath: /app/firebase.json
-              subPath: firebase.json
-            - name: gcs-json-volume
-              mountPath: /app/gcs-owner.json
-              subPath: gcs-owner.json
-            - name: gcs-json-volume
-              mountPath: /app/gcs.json
-              subPath: gcs.json
-
-        - name: python-ml
-          image: assam5649/python-ml:latest
-          ports:
-            - containerPort: 8501
-          envFrom:
-            - secretRef:
-                name: app-env
-          volumeMounts:
-            - name: gcs-json-volume
-              mountPath: /app/gcs.json
-              subPath: gcs.json
-
         - name: mysql
           image: mysql:latest
           ports:
@@ -73,6 +43,50 @@ spec:
           volumeMounts:
             - name: mysql-data
               mountPath: /var/lib/mysql
+          readinessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+        - name: python-ml
+          image: assam5649/python-ml:latest
+          ports:
+            - containerPort: 8501
+          envFrom:
+            - secretRef:
+                name: app-env
+          volumeMounts:
+            - name: gcs-json-volume
+              mountPath: /app/gcs.json
+              subPath: gcs.json
+          initContainers:
+            - name: wait-for-mysql
+              image: busybox
+              command: ['sh', '-c', 'until nc -z mysql 3306; do echo waiting for mysql; sleep 2; done;']
+
+        - name: go-backend
+          image: assam5649/go-backend:latest
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: app-env
+          volumeMounts:
+            - name: firebase-json-volume
+              mountPath: /app/firebase.json
+              subPath: firebase.json
+            - name: gcs-json-volume
+              mountPath: /app/gcs-owner.json
+              subPath: gcs-owner.json
+            - name: gcs-json-volume
+              mountPath: /app/gcs.json
+              subPath: gcs.json
+          initContainers:
+            - name: wait-for-python
+              image: busybox
+              command: ['sh', '-c', 'until nc -z python-ml 8501; do echo waiting for python; sleep 2; done;']
+
       volumes:
         - name: firebase-json-volume
           secret:
