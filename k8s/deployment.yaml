@@ -14,6 +14,10 @@ spec:
       labels:
         app: aminavi
     spec:
+      initContainers:
+        - name: wait-for-mysql
+          image: busybox
+          command: ['sh', '-c', 'until nc -z mysql 3306; do echo waiting for mysql; sleep 2; done;']
       containers:
         - name: mysql
           image: mysql:latest
@@ -60,10 +64,6 @@ spec:
             - name: gcs-json-volume
               mountPath: /app/gcs.json
               subPath: gcs.json
-          initContainers:
-            - name: wait-for-mysql
-              image: busybox
-              command: ['sh', '-c', 'until nc -z mysql 3306; do echo waiting for mysql; sleep 2; done;']
 
         - name: go-backend
           image: assam5649/go-backend:latest
@@ -82,10 +82,6 @@ spec:
             - name: gcs-json-volume
               mountPath: /app/gcs.json
               subPath: gcs.json
-          initContainers:
-            - name: wait-for-python
-              image: busybox
-              command: ['sh', '-c', 'until nc -z python-ml 8501; do echo waiting for python; sleep 2; done;']
 
       volumes:
         - name: firebase-json-volume
