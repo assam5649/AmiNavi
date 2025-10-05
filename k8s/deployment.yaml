@@ -91,10 +91,11 @@ spec:
               mountPath: /app/gcs.json
               subPath: gcs.json
           readinessProbe:
-            exec:
-              command: ["sh", "-c", "mysql -h localhost -u root -p${MYSQL_ROOT_PASSWORD} -e 'SELECT 1'"]
+            tcpSocket:
+              port: 3306
             initialDelaySeconds: 30
-            periodSeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
             failureThreshold: 6
 
       volumes:

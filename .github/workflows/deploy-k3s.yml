@@ -35,8 +35,9 @@ jobs:
             --from-file=firebase.json=firebase.json \
             --dry-run=client -o yaml | kubectl apply -f -
 
-          echo "${{ secrets.GCS_SERVICE_ACCOUNT_OWNER_PRIVATE_KEY }}" | sed 's/\\n/\n/g' > gcs-owner.json
-          echo "${{ secrets.GCS_SERVICE_ACCOUNT_PRIVATE_KEY }}" | sed 's/\\n/\n/g' > gcs.json
+          echo "${{ secrets.GCS_SERVICE_ACCOUNT_OWNER_PRIVATE_KEY }}" | base64 --decode > gcs-owner.json
+          echo "${{ secrets.GCS_SERVICE_ACCOUNT_PRIVATE_KEY }}" | base64 --decode > gcs.json
+          
           kubectl create secret generic gcs-secrets \
             --from-file=gcs-owner.json=gcs-owner.json \
             --from-file=gcs.json=gcs.json \
