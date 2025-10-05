@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"reflect"
 	"server/internal/auth"
@@ -9,6 +8,8 @@ import (
 	"server/internal/dto/post"
 	"server/internal/models"
 	"server/internal/services"
+
+	"github.com/gin-gonic/gin"
 )
 
 type AuthHandler struct {
@@ -50,8 +51,6 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, register)
-
-	return
 }
 
 func (h *AuthHandler) Update(c *gin.Context) {
@@ -87,6 +86,4 @@ func (h *AuthHandler) Update(c *gin.Context) {
 	response.UpdatedAt = user.UpdatedAt
 
 	c.JSON(http.StatusOK, response)
-
-	return
 }

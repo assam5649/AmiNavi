@@ -87,8 +87,6 @@ func (h *WorkHandler) GetAll(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, responses)
-
-	return
 }
 
 func (h *WorkHandler) Create(c *gin.Context) {
@@ -130,8 +128,6 @@ func (h *WorkHandler) Create(c *gin.Context) {
 	response.CreatedAt = work.CreatedAt
 
 	c.JSON(http.StatusCreated, response)
-
-	return
 }
 
 func (h *WorkHandler) GetByID(c *gin.Context) {
@@ -176,8 +172,6 @@ func (h *WorkHandler) GetByID(c *gin.Context) {
 	response.CompletedAt = work.CompletedAt
 
 	c.JSON(http.StatusOK, response)
-
-	return
 }
 
 func (h *WorkHandler) PutByID(c *gin.Context) {
@@ -228,8 +222,6 @@ func (h *WorkHandler) PutByID(c *gin.Context) {
 	response.CompletedAt = work.CompletedAt
 
 	c.JSON(http.StatusOK, response)
-
-	return
 }
 
 func (h *WorkHandler) PatchByID(c *gin.Context) {
@@ -280,8 +272,6 @@ func (h *WorkHandler) PatchByID(c *gin.Context) {
 	response.CompletedAt = work.CompletedAt
 
 	c.JSON(http.StatusOK, response)
-
-	return
 }
 
 func (h *WorkHandler) DeleteByID(c *gin.Context) {
@@ -312,6 +302,4 @@ func (h *WorkHandler) DeleteByID(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusAccepted, nil)
-
-	return
 }

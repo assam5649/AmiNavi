@@ -23,11 +23,6 @@ services:
       - ./aminavi-46dfc-firebase-adminsdk-fbsvc-54a4015174.json:/app/aminavi-46dfc-firebase-adminsdk-fbsvc-54a4015174.json
       - ./aminavi-652103e6dc0c.json:/app/aminavi-652103e6dc0c.json
       - ./august-button-470219-d5-5cc12900c9b1.json:/app/august-button-470219-d5-5cc12900c9b1.json
-    depends_on:
-      db:
-        condition: service_healthy
-      ml-service:
-        condition: service_started
 
   ml-service:
     container_name: python-ml
@@ -54,11 +49,6 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "db"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
 
 networks:
     app_network:

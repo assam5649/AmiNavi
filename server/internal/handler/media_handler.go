@@ -28,7 +28,7 @@ func (h *MediaHandler) HandlerFixCSV(c *gin.Context) {
 
 	csvData, fileName, err := h.MediaService.FixCsv.FixCsv(
 		c.Request.Context(),
-		data, // []byte で渡す
+		data,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fix csv."})
@@ -41,7 +41,6 @@ func (h *MediaHandler) HandlerFixCSV(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusAccepted, response)
-	return
 }
 
 func (h *MediaHandler) HandlerOCR(c *gin.Context) {
@@ -81,17 +80,10 @@ func (h *MediaHandler) HandlerOCR(c *gin.Context) {
 		c.JSON(statusCode, gin.H{"error": "OCR processing failed.", "details": errorMessage})
 		return
 	}
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 	return
-	// }
 
 	response.Pattern = string(csv)
 
 	c.JSON(http.StatusOK, response)
-
-	return
-
 }
 
 func (h *MediaHandler) HandlerConversion(c *gin.Context) {
@@ -133,15 +125,9 @@ func (h *MediaHandler) HandlerConversion(c *gin.Context) {
 		c.JSON(statusCode, gin.H{"error": "ML processing failed.", "details": errorMessage})
 		return
 	}
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 	return
-	// }
 
 	response.Csv = csv
 	response.FileName = fileName
 
 	c.JSON(http.StatusOK, response)
-
-	return
 }
