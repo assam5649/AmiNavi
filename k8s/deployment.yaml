@@ -58,7 +58,11 @@ spec:
         - name: python-ml
           image: assam5649/python-ml:latest
           ports:
-            - containerPort: 8501
+            - containerPort: 8501]
+          lifecycle:
+            postStart:
+              exec:
+                command: ["mkdir", "-p", "/app/ml/model"]
           envFrom:
             - secretRef:
                 name: app-env
