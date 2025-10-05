@@ -40,6 +40,10 @@ spec:
           envFrom:
             - secretRef:
                 name: app-env
+          volumeMounts:
+            - name: gcs-json-volume
+              mountPath: /app/gcs.json
+              subPath: gcs.json
 
         - name: mysql
           image: mysql:latest

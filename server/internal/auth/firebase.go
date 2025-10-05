@@ -13,10 +13,7 @@ import (
 // InitFirebaseAuthClient はFirebase Admin SDKを初期化し、
 // この関数はアプリケーションの起動時に一度だけ呼び出します
 func InitFirebaseAuthClient() *auth.Client {
-	serviceAccountKeyPath := os.Getenv("FIREBASE_SERVICE_ACCOUNT_KEY_PATH")
-	if serviceAccountKeyPath == "" {
-		log.Fatalf("FATAL: FIREBASE_SERVICE_ACCOUNT_KEY_PATH environment variable is not set. Please set the path to the Firebase service account key JSON file.")
-	}
+	serviceAccountKeyPath := os.Getenv("/app/firebase.json")
 
 	opt := option.WithCredentialsFile(serviceAccountKeyPath)
 	app, err := firebase.NewApp(context.Background(), nil, opt)

@@ -20,7 +20,7 @@ import (
 
 func main() {
 	cfg := config.Load()
-	credentialsFile := "aminavi-652103e6dc0c.json"
+	credentialsFile := "/app/gcs.json"
 
 	DB, err := db.Connect()
 	if err != nil {

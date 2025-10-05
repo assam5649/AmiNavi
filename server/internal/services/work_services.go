@@ -168,7 +168,7 @@ func (s *GetServiceImpl) GetByID(uid string, id int) (*models.Work, string, erro
 	bucketName := "aminavi"
 	gcsFileName := "csv/" + work.FileName
 
-	data, err := os.ReadFile("/app/august-button-470219-d5-5cc12900c9b1.json")
+	data, err := os.ReadFile("/app/gcs-owner.json")
 	if err != nil {
 		return nil, "", err
 	}
