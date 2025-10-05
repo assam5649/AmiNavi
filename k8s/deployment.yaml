@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: go-backend
-          image: yourdockerhubuser/go-backend:<commit_SHA>
+          image: assam5649/go-backend:<commit_SHA>
           ports:
             - containerPort: 8080
           envFrom:
@@ -34,7 +34,7 @@ spec:
               subPath: gcs.json
 
         - name: python-ml
-          image: yourdockerhubuser/python-ml:<commit_SHA>
+          image: assam5649/python-ml:<commit_SHA>
           ports:
             - containerPort: 8501
 
