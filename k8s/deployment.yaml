@@ -71,6 +71,12 @@ spec:
           image: assam5649/go-backend:latest
           ports:
             - containerPort: 8080
+          env:
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: app-env
+                  key: MYSQL_DATABASE
           envFrom:
             - secretRef:
                 name: app-env
@@ -84,6 +90,12 @@ spec:
             - name: gcs-json-volume
               mountPath: /app/gcs.json
               subPath: gcs.json
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "mysql -h localhost -u root -p${MYSQL_ROOT_PASSWORD} -e 'SELECT 1'"]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
 
       volumes:
         - name: firebase-json-volume
