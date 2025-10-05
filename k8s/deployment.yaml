@@ -81,6 +81,8 @@ spec:
                 secretKeyRef:
                   name: app-env
                   key: MYSQL_DATABASE
+            - name: FIREBASE_SERVICE_ACCOUNT_KEY_PATH 
+              value: "/app/firebase.json"
           envFrom:
             - secretRef:
                 name: app-env
