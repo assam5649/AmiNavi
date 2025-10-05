@@ -73,6 +73,9 @@ spec:
                 name: app-env
           volumeMounts:
             - name: gcs-json-volume
+              mountPath: /app/gcs-owner.json
+              subPath: gcs-owner.json
+            - name: gcs-json-volume
               mountPath: /app/gcs.json
               subPath: gcs.json
           resources:
@@ -91,7 +94,7 @@ spec:
                 secretKeyRef:
                   name: app-env
                   key: MYSQL_DATABASE
-            - name: FIREBASE_SERVICE_ACCOUNT_KEY_PATH 
+            - name: GOOGLE_APPLICATION_CREDENTIALS 
               value: "/app/firebase.json"
           envFrom:
             - secretRef:
