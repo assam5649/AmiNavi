@@ -58,7 +58,7 @@ spec:
         - name: python-ml
           image: assam5649/python-ml:latest
           ports:
-            - containerPort: 8501]
+            - containerPort: 8501
           lifecycle:
             postStart:
               exec:
