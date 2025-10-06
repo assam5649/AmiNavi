@@ -61,7 +61,7 @@ spec:
               memory: "256Mi"
 
         - name: python-ml
-          image: assam5649/python-ml:latest
+          image: assam5649/python-ml:<commit_SHA>
           ports:
             - containerPort: 8501
           lifecycle:
@@ -85,7 +85,7 @@ spec:
               memory: "512Mi"
 
         - name: go-backend
-          image: assam5649/go-backend:latest
+          image: assam5649/go-backend:<commit_SHA>
           ports:
             - containerPort: 8080
           env:
