@@ -81,8 +81,10 @@ spec:
           resources:
             limits:
               memory: "768Mi" 
+              cpu: "800m"
             requests:
               memory: "512Mi"
+              cpu: "500m"
 
         - name: go-backend
           image: assam5649/go-backend:<commit_SHA>
