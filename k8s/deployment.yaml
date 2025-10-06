@@ -80,7 +80,7 @@ spec:
               subPath: gcs.json
           resources:
             limits:
-              memory: "1Gi" 
+              memory: "768Mi" 
             requests:
               memory: "512Mi"
 
