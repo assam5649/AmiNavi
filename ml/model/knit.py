@@ -10,17 +10,10 @@ from tensorflow import keras
 from google.cloud import storage
 
 try:
-    MODEL_NAME = "knit_v1.0.keras"
-    MODEL_PATH = "/app/ml/model/knit.keras"
-
-    client = storage.Client()
-    bucket = client.bucket("models")
-    blob = bucket.blob(MODEL_NAME)
-    blob.download_to_filename(MODEL_PATH)
-
+    MODEL_PATH = "ml/model/knit_v1.0.keras"
 
     load_model = keras.models.load_model(MODEL_PATH)
-    with open('/app/model/class_indices.json', 'r') as f:
+    with open('ml/model/class_indices.json', 'r') as f:
         class_indices = json.load(f)
     class_label = class_indices
 
