@@ -177,7 +177,7 @@ func (s *RequestOCRServiceImpl) RequestOCR(image []byte) ([]byte, error) {
 		slog.Warn("DEBUG: Go received zero-length image data.")
 	}
 
-	url := "http://localhost:8501/ocr"
+	url := "http://153.127.198.139:8501/ocr"
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
@@ -233,7 +233,7 @@ func (s *RequestConvertServiceImpl) RequestConvert(image []byte) ([]byte, error)
 		slog.Warn("DEBUG: Go received zero-length image data.")
 	}
 
-	url := "http://localhost:8501/convert"
+	url := "http://153.127.198.139:8501/convert"
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
