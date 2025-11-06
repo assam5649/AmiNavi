@@ -1,9 +1,10 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"server/internal/auth"
 	"server/internal/services"
+
+	"github.com/gin-gonic/gin"
 )
 
 func NewRouter(authService *services.AuthServices, workService *services.WorkServices, mediaService *services.MediaServices) *gin.Engine {

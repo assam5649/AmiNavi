@@ -1,9 +1,10 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"server/internal/handler"
 	"server/internal/services"
+
+	"github.com/gin-gonic/gin"
 )
 
 func WorkRouter(router *gin.RouterGroup, service *services.WorkServices) {

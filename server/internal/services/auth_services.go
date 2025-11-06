@@ -1,11 +1,12 @@
 package services
 
 import (
-	firebase "firebase.google.com/go/v4/auth"
-	"gorm.io/gorm"
 	"server/internal/db"
 	"server/internal/dto/patch"
 	"server/internal/models"
+
+	firebase "firebase.google.com/go/v4/auth"
+	"gorm.io/gorm"
 )
 
 type RegisterService interface {
